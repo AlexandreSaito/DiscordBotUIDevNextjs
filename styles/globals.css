@@ -1,0 +1,135 @@
+:root {
+  --header-size: 72px;
+}
+/* remover setas do input type numer*/
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* remover setas do input type numer*/
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+  -webkit-appearance: none;
+}
+#main-sidemenu {
+  position: fixed;
+  width: 300px;
+  height: 500px;
+  top: 85px;
+  left: -500px;
+  transition: left ease-in 0.5s;
+  z-index: 1000;
+}
+
+#main-sidemenu.show {
+  left: 15px;
+}
+
+body {
+  height: calc(100vh - var(--header-size));
+}
+
+body > #app,
+body > #app > section.content {
+  height: 100%;
+}
+
+main {
+  background-color: #ecf0f5;
+  margin-top: var(--header-size);
+  padding: 10px;
+  min-height: 100%;
+}
+
+.side-menu {
+  background: #484848;
+  height: 100%;
+  width: 100%;
+  border-radius: 10px;
+  color: white;
+  border: 3px gray solid;
+}
+
+.side-menu a,
+header a {
+  text-decoration: none;
+  color: white !important;
+}
+
+.side-menu a:link,
+header a:link {
+  text-decoration: none;
+  color: white !important;
+}
+
+.side-menu a:hover,
+header a:hover {
+  color: #d5d5d5 !important;
+}
+
+.side-menu-header {
+  height: 35px;
+  margin-top: 10px;
+  border-bottom: 1px solid black;
+  padding: 0px 10px;
+}
+
+.side-menu-header .close {
+  position: absolute;
+  right: 8px;
+  top: 5px;
+}
+
+.side-menu-content {
+  height: calc(100% - 70px);
+  overflow-y: scroll;
+  background: #2e2e2e;
+}
+.side-menu-content ul {
+  list-style: none;
+}
+.side-menu-content li {
+}
+
+.side-menu a {
+}
+
+header .navbar {
+  display: flex !important;
+  flex-basis: auto;
+  flex-grow: 1;
+}
+
+header .navbar .navbar-nav {
+  flex-direction: row;
+}
+
+header .nav-brand {
+  margin-right: 1rem;
+}
+
+header .nav-link {
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
+}
+
+.card {
+  margin-bottom: 10px;
+}
+
+.list-group.scrollable {
+  --scrollable-height: 600px;
+  overflow-y: scroll;
+  max-height: var(--scrollable-height);
+}
+
+.list-group.list-group-sm > .list-group-item {
+  padding: 2px 5px 2px 5px;
+}
+
+.text-sm {
+  font-size: 13px;
+}
