@@ -181,6 +181,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 )}
                 {discordOptionLink("Music Conf", `/discord/${id}/music-config`)}
                 {discordOptionLink("Playlists", `/discord/${id}/playlist`)}
+                {discordOptionLink("Audio Files", `/discord/${id}/audio-file`)}
               </ul>
             </div>
             <div className="card-body">{children}</div>

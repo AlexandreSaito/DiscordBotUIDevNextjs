@@ -20,13 +20,18 @@ export function Fetch(url, header) {
   if (!header) header = {};
   if (!header.method) header.method = "POST";
   if (!header.headers) header.headers = {};
-  if (!header.headers["Content-Type"])
-    header.headers["Content-Type"] = "application/json";
-  if (!header.cache) header.cache = "default";
 
-  if (header.body)
-    if (typeof header.body == "object")
-      header.body = JSON.stringify(header.body);
+  if (header.isFormData) {
+    delete header.isFormData;
+  } else {
+    if (!header.headers["Content-Type"])
+      header.headers["Content-Type"] = "application/json";
+    if (!header.cache) header.cache = "default";
+
+    if (header.body)
+      if (typeof header.body == "object")
+        header.body = JSON.stringify(header.body);
+  }
 
   return fetch(url, header);
 }

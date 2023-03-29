@@ -12,7 +12,7 @@ export function ConfirmationModal() {
       ref={confirmationModal}
       data-bs-backdrop="static"
     >
-      <div className="modal-dialog">
+      <div className="modal-dialog modal-lg">
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">Modal title</h5>
@@ -52,7 +52,7 @@ export function DisplayModal() {
       ref={displayModalRef}
       data-bs-backdrop="static"
     >
-      <div className="modal-dialog">
+      <div className="modal-dialog modal-lg">
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title"></h5>
