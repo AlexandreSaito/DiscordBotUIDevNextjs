@@ -46,8 +46,20 @@ const todo = [
         name: "custom messages",
         done: true,
         sub: [
-          { name: "use custom message", done: false },
+          { name: "use custom message", done: true },
           { name: "change messages (via web)", done: true },
+        ],
+      },
+      {
+        name: "custom audio",
+        done: true,
+        sub: [
+          { name: "play custom audio", done: false },
+          { name: "add custom audio", done: false },
+          { name: "add custom audio (via web)", done: false },
+          { name: "delete custom audio", done: false },
+          { name: "delete custom audio (via web)", done: false },
+          { name: "edit custom audio (via web)", done: false },
         ],
       },
       {
@@ -91,7 +103,7 @@ const todo = [
         sub: [
           { name: "dont active disabled", done: true },
           { name: "enable/disable", done: false },
-          { name: "enable/disable (via web)", done: false },
+          { name: "enable/disable (via web)", done: true },
           { name: "permission to call by user", done: false },
           { name: "permission to call by role", done: false },
           {
@@ -99,7 +111,7 @@ const todo = [
             done: false,
             sub: [
               { name: "by default", done: false },
-              { name: "by default (via web)", done: false },
+              { name: "by default (via web)", done: true },
               { name: "by role", done: false },
               { name: "by role (via web)", done: false },
               { name: "by user", done: false },
