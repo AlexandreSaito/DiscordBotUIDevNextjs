@@ -1,15 +1,16 @@
 import React from "react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import { NextPageWithLayout } from "/pages/_app";
+import { NextPageWithLayout } from "pages/_app";
 import Layout from "./layout";
-import { DiscordContext } from "/context/discord";
-import { changeState } from "/js/objectHandler";
-import { FetchDiscord } from "/js/connection";
-import PlaylistItem from "/components/discord/PlaylistItem";
-import { FormModal } from "/components/Modal";
-import { showToast } from "/components/Toast";
-import { PlaylistForm } from "/components/discord/PlaylistForm";
+import { DiscordContext } from "context/discord";
+import { changeState } from "js/objectHandler";
+import { FetchDiscord } from "js/connection";
+import PlaylistItem from "components/discord/PlaylistItem";
+import { FormModal, IOuterModal } from "components/Modal";
+import { showToast } from "components/Toast";
+import { PlaylistForm } from "components/discord/PlaylistForm";
+import { IPlaylistSimple } from "js/discord/audio";
 
 const playlistFormDefault = {
   globalPermissions: {
@@ -23,7 +24,11 @@ const playlistFormDefault = {
   name: "",
 };
 
-function makeListPlaylist(list, onSelectPlaylist, selected) {
+function makeListPlaylist(
+  list: null | undefined | Array<IPlaylistSimple>,
+  onSelectPlaylist: (id: number) => void,
+  selected: number
+) {
   let el = [];
 
   if (!list) return null;
@@ -32,7 +37,7 @@ function makeListPlaylist(list, onSelectPlaylist, selected) {
     let elClass = `list-group-item list-group-item-action ${
       item.id == selected ? "active" : ""
     }`;
-    let onClick = (e) => {
+    let onClick = (e: any) => {
       e.preventDefault();
       onSelectPlaylist(item.id);
     };
@@ -46,7 +51,7 @@ function makeListPlaylist(list, onSelectPlaylist, selected) {
   return el;
 }
 
-const Page: NextPageWithLayout = (a) => {
+const Page: NextPageWithLayout = () => {
   const { ctx, changeCtx } = React.useContext(DiscordContext);
   const [playlistState, setPlaylistState] = React.useState(playlistFormDefault);
 
@@ -56,11 +61,11 @@ const Page: NextPageWithLayout = (a) => {
     listPlaylist: ctx.listPlaylist,
   });
 
-  const txtPlaylistNameRef = React.createRef();
+  const txtPlaylistNameRef = React.createRef<HTMLInputElement>();
 
-  const getListPlaylist = (removeCurrent) => {
+  const getListPlaylist = (removeCurrent?: boolean) => {
     if (removeCurrent) changeState(setState, state, { selected: 0 });
-    FetchDiscord("/discord/playlist-list", null, (r) => {
+    FetchDiscord("/discord/playlist-list", null, (r: any) => {
       changeCtx({ listPlaylist: r.data });
       changeState(setState, state, {
         listPlaylist: r.data,
@@ -75,11 +80,12 @@ const Page: NextPageWithLayout = (a) => {
     }
   });
 
-  const onSelectPlaylist = (id) => {
+  const onSelectPlaylist = (id: number) => {
     changeState(setState, state, { selected: id });
   };
 
   const onCreatePlaylistClick = () => {
+    if (!txtPlaylistNameRef.current || !modalOuter.getModal) return;
     changeState(
       setPlaylistState,
       playlistState,
@@ -90,6 +96,7 @@ const Page: NextPageWithLayout = (a) => {
   };
 
   const validatePlaylist = () => {
+    if (!txtPlaylistNameRef.current) return false;
     txtPlaylistNameRef.current.classList.remove("is-invalid");
     if (!playlistState.name || playlistState.name.length == 0) {
       txtPlaylistNameRef.current.classList.add("is-invalid");
@@ -99,6 +106,7 @@ const Page: NextPageWithLayout = (a) => {
   };
 
   const onSavePlaylist = () => {
+    if (!modalOuter.getModal) return;
     modalOuter.getModal().hide();
     FetchDiscord(
       "/discord/add-playlist",
@@ -110,7 +118,7 @@ const Page: NextPageWithLayout = (a) => {
           playMode: playlistState.defaultReproduction,
         },
       },
-      (r) => {
+      (r: any) => {
         showToast({
           message: r.message,
           title: "PLAYLIST CREATE",
@@ -122,32 +130,32 @@ const Page: NextPageWithLayout = (a) => {
   };
 
   const globalEvents = {
-    onChangeAdd: (ref) => {
+    onChangeAdd: (ref: any) => {
       changeState(setPlaylistState, playlistState, {
         globalPermissions: { canAdd: ref.current.checked },
       });
     },
-    onChangeRemoveMusic: (ref) => {
+    onChangeRemoveMusic: (ref: any) => {
       changeState(setPlaylistState, playlistState, {
         globalPermissions: { canRemoveMusic: ref.current.checked },
       });
     },
-    onChangeDelete: (ref) => {
+    onChangeDelete: (ref: any) => {
       changeState(setPlaylistState, playlistState, {
         globalPermissions: { canDelete: ref.current.checked },
       });
     },
-    onChangeLoop: (ref) => {
+    onChangeLoop: (ref: any) => {
       changeState(setPlaylistState, playlistState, {
         inLoop: ref.current.checked,
       });
     },
-    onChangeRep: (ref) => {
+    onChangeRep: (ref: any) => {
       changeState(setPlaylistState, playlistState, {
         defaultReproduction: ref.current.value,
       });
     },
-    onChangeName: (ref) => {
+    onChangeName: (ref: any) => {
       changeState(setPlaylistState, playlistState, {
         name: ref.current.value,
       });
@@ -155,23 +163,23 @@ const Page: NextPageWithLayout = (a) => {
   };
 
   const playlistElement =
-    state.selected && state.selected > 0 ? (
+    state.selected && state.selected > 0 && state.listPlaylist ? (
       <PlaylistItem
         reloadList={getListPlaylist}
         playlist={state.listPlaylist.find((x) => x.id == state.selected)}
       ></PlaylistItem>
     ) : null;
 
-  const modalOuter = {};
+  const modalOuter = {} as IOuterModal;
   const modalCreatePlaylist = FormModal(
     <>
       <div className="form-floating mb-3">
         <input
           className="form-control"
           placeholder="   "
-          maxLength="25"
+          maxLength={25}
           ref={txtPlaylistNameRef}
-          onChange={(e) => {
+          onChange={(e: any) => {
             globalEvents.onChangeName(txtPlaylistNameRef);
           }}
           value={playlistState.name}

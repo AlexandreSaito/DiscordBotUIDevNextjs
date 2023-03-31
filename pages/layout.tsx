@@ -3,23 +3,27 @@ import Header from "./../components/Header";
 import Sidebar from "./../components/Sidebar";
 import Head from "next/head";
 import Script from "next/script";
-import { ConfirmationModal, DisplayModal } from "/components/Modal";
-import { setHandler } from "/components/Toast";
+import { ConfirmationModal, DisplayModal } from "components/Modal";
+import { setHandler } from "components/Toast";
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [toastState, setToastState] = React.useState({ toast: null });
+  const [toastState, setToastState] = React.useState({ toast: [] } as {
+    toast: Array<any>;
+  });
 
   const toastHandler = {
-    setToast: (toast) => {
+    setToast: (toast: any) => {
       setToastState({
-        toast: toastState.toast ? toastState.toast.concat([toast]) : [toast],
+        toast: toastState.toast
+          ? toastState.toast.concat([toast])
+          : ([toast] as Array<any>),
       });
     },
-    removeToast: (key) => {
+    removeToast: (key: any) => {
       setToastState({
         toast: toastState.toast
           ? toastState.toast.filter((x) => x.key != key)

@@ -1,3 +1,7 @@
-export interface ICommand {}
+export interface ICommand {
+  name: string;
+}
 
-export interface ICommandRule {}
+export interface ICommandRule {
+  name: string;
+}

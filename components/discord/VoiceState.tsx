@@ -1,8 +1,8 @@
 import React from "react";
-import { DiscordContext } from "/context/discord";
-import { FetchDiscord } from "/js/connection";
-import { FormModal } from "/components/Modal";
-import PlayingInfo from "/components/discord/PlayingInfo";
+import { DiscordContext } from "context/discord";
+import { FetchDiscord } from "js/connection";
+import { FormModal, IOuterModal } from "components/Modal";
+import PlayingInfo from "components/discord/PlayingInfo";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlay,
@@ -10,8 +10,9 @@ import {
   faPause,
   faForward,
 } from "@fortawesome/free-solid-svg-icons";
+import { IAudioChannel } from "js/discord/types";
 
-function getOptionsVoiceChannel(list) {
+function getOptionsVoiceChannel(list?: Array<IAudioChannel>) {
   var options = [];
   options.push(
     <option key={-1} value="">
@@ -29,11 +30,11 @@ function getOptionsVoiceChannel(list) {
   return options;
 }
 
-function VoiceState(props) {
+function VoiceState(props: any) {
   const { ctx, changeCtx } = React.useContext(DiscordContext);
 
-  const ddlVoiceChannelRef = React.createRef();
-  var txtYTUrlRef = React.createRef();
+  const ddlVoiceChannelRef = React.createRef<HTMLSelectElement>();
+  var txtYTUrlRef = React.createRef<HTMLInputElement>();
 
   var ddlVoiceChannelValue = ctx.channels.voice.connected
     ? ctx.channels.voice.connected.id
@@ -43,13 +44,14 @@ function VoiceState(props) {
 
   const optionsVoiceChannel = getOptionsVoiceChannel(ctx.channels.voice.list);
 
-  const onChangeVoiceChannel = (e) => {
+  const onChangeVoiceChannel = (e: any) => {
+    if (!ddlVoiceChannelRef.current || !ctx.guild.current) return;
     let channel = ddlVoiceChannelRef.current.value;
     ddlVoiceChannelRef.current.disabled = true;
     FetchDiscord(
       "/discord/enter-voice-channel",
       { body: { guildId: ctx.guild.current.id, channelId: channel } },
-      (r) => {
+      (r: any) => {
         if (ddlVoiceChannelRef.current)
           ddlVoiceChannelRef.current.disabled = false;
         if (r.alert == "success") {
@@ -58,12 +60,14 @@ function VoiceState(props) {
       }
     );
   };
-  const onAddMusic = (e) => {
+  const onAddMusic = (e: any) => {
+    if (!txtYTUrlRef.current) return;
     txtYTUrlRef.current.classList.remove("is-invalid");
     txtYTUrlRef.current.value = "";
-    modalAddMusicOuter.getModal().show();
+    if (modalAddMusicOuter.getModal) modalAddMusicOuter.getModal().show();
   };
   const validateAddMusic = () => {
+    if (!txtYTUrlRef.current) return false;
     if (txtYTUrlRef.current.value.length == 0) {
       txtYTUrlRef.current.classList.add("is-invalid");
       return false;
@@ -71,41 +75,42 @@ function VoiceState(props) {
     return true;
   };
   const onAddMusicSave = () => {
+    if (!txtYTUrlRef.current) return;
     //https://www.youtube.com/watch?v=7Gg9iQHfV5A
     FetchDiscord(
       "/discord/play-music",
       { body: { url: txtYTUrlRef.current.value } },
-      (r) => {
-        modalAddMusicOuter.getModal().hide();
+      (r: any) => {
+        if (modalAddMusicOuter.getModal) modalAddMusicOuter.getModal().hide();
       }
     );
   };
-  const onPlayMusic = (e) => {
-    FetchDiscord("/discord/music-resume", null, (r) => {
+  const onPlayMusic = (e: any) => {
+    FetchDiscord("/discord/music-resume", null, (r: any) => {
       console.log(r);
       changeCtx({ music: { playing: true } });
     });
   };
-  const onPauseMusic = (e) => {
-    FetchDiscord("/discord/music-pause", null, (r) => {
+  const onPauseMusic = (e: any) => {
+    FetchDiscord("/discord/music-pause", null, (r: any) => {
       console.log(r);
       changeCtx({ music: { playing: false } });
     });
   };
-  const onSkipMusic = (e) => {
-    FetchDiscord("/discord/music-skip", null, (r) => {
+  const onSkipMusic = (e: any) => {
+    FetchDiscord("/discord/music-skip", null, (r: any) => {
       console.log(r);
       changeCtx({ music: { playing: false } });
     });
   };
-  const onStopMusic = (e) => {
-    FetchDiscord("/discord/music-stop", null, (r) => {
+  const onStopMusic = (e: any) => {
+    FetchDiscord("/discord/music-stop", null, (r: any) => {
       console.log(r);
       changeCtx({ music: { playing: false } });
     });
   };
 
-  var modalAddMusicOuter = {};
+  var modalAddMusicOuter = {} as IOuterModal;
   var modalAddMusic = FormModal(
     <div className="form-floating">
       <input className="form-control" placeholder=" " ref={txtYTUrlRef} />
