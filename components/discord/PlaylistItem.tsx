@@ -28,7 +28,7 @@ function PlaylistItem(props: any) {
     }
   });
 
-  if (!props.playlist || props.playlist.id == 0 || !state) return;
+  if (!props.playlist || props.playlist.id == 0 || !state) return <></>;
 
   var txtYTUrlRef = React.createRef<HTMLInputElement>();
 

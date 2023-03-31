@@ -25,7 +25,7 @@ const playlistFormDefault = {
 };
 
 function makeListPlaylist(
-  list: Array<IPlaylistSimple>,
+  list: null | undefined | Array<IPlaylistSimple>,
   onSelectPlaylist: (id: number) => void,
   selected: number
 ) {
@@ -61,7 +61,7 @@ const Page: NextPageWithLayout = () => {
     listPlaylist: ctx.listPlaylist,
   });
 
-  const txtPlaylistNameRef = React.createRef();
+  const txtPlaylistNameRef = React.createRef<HTMLInputElement>();
 
   const getListPlaylist = (removeCurrent?: boolean) => {
     if (removeCurrent) changeState(setState, state, { selected: 0 });
@@ -85,6 +85,7 @@ const Page: NextPageWithLayout = () => {
   };
 
   const onCreatePlaylistClick = () => {
+    if (!txtPlaylistNameRef.current || !modalOuter.getModal) return;
     changeState(
       setPlaylistState,
       playlistState,
@@ -95,6 +96,7 @@ const Page: NextPageWithLayout = () => {
   };
 
   const validatePlaylist = () => {
+    if (!txtPlaylistNameRef.current) return false;
     txtPlaylistNameRef.current.classList.remove("is-invalid");
     if (!playlistState.name || playlistState.name.length == 0) {
       txtPlaylistNameRef.current.classList.add("is-invalid");
@@ -104,6 +106,7 @@ const Page: NextPageWithLayout = () => {
   };
 
   const onSavePlaylist = () => {
+    if (!modalOuter.getModal) return;
     modalOuter.getModal().hide();
     FetchDiscord(
       "/discord/add-playlist",
@@ -115,7 +118,7 @@ const Page: NextPageWithLayout = () => {
           playMode: playlistState.defaultReproduction,
         },
       },
-      (r) => {
+      (r: any) => {
         showToast({
           message: r.message,
           title: "PLAYLIST CREATE",
@@ -160,7 +163,7 @@ const Page: NextPageWithLayout = () => {
   };
 
   const playlistElement =
-    state.selected && state.selected > 0 ? (
+    state.selected && state.selected > 0 && state.listPlaylist ? (
       <PlaylistItem
         reloadList={getListPlaylist}
         playlist={state.listPlaylist.find((x) => x.id == state.selected)}

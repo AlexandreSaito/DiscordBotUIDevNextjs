@@ -59,7 +59,7 @@ export interface IContext {
   initialLoad?: number;
   lastConnectionTime: null | undefined | string;
   lastLoadedTime: number;
-  listPlaylist?: IPlaylistSimple;
+  listPlaylist?: Array<IPlaylistSimple>;
   on: boolean;
   play: IPlayCtx;
   playState: EnumPlayState;
