@@ -1,13 +1,13 @@
 import React from "react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import { NextPageWithLayout } from "/pages/_app";
+import { NextPageWithLayout } from "pages/_app";
 import Layout from "./layout";
-import { DiscordContext } from "/context/discord";
-import { changeState } from "/js/objectHandler";
-import { FetchDiscord } from "/js/connection";
+import { DiscordContext } from "context/discord";
+import { changeState } from "js/objectHandler";
+import { FetchDiscord } from "js/connection";
 
-function makeTTSLanguageOptions(languages) {
+function makeTTSLanguageOptions(languages: null | undefined | any) {
   let el = [];
   if (!languages) return null;
   let names = Object.getOwnPropertyNames(languages);
@@ -43,31 +43,35 @@ const Page: NextPageWithLayout = () => {
         ttsLanguage: ctx.ttsLanguage,
       });
     if (!ctx.ttsLanguages) {
-      FetchDiscord("/discord/list-tts-language", null, (r) => {
+      FetchDiscord("/discord/list-tts-language", null, (r: any) => {
         changeCtx({ ttsLanguages: r });
       });
     }
   }, [ctx, changeCtx, state]);
 
-  const ttsLanguageRef = React.createRef();
-  const ttsRef = React.createRef();
-  const musicRef = React.createRef();
-  const audioRef = React.createRef();
+  const ttsLanguageRef = React.createRef<HTMLSelectElement>();
+  const ttsRef = React.createRef<HTMLInputElement>();
+  const musicRef = React.createRef<HTMLInputElement>();
+  const audioRef = React.createRef<HTMLInputElement>();
 
-  const onChangeAudioVolume = (e) => {
+  const onChangeAudioVolume = (e: any) => {
+    if (!audioRef.current) return;
     changeState(setState, state, { audio: audioRef.current.value });
   };
-  const onChangeMusicVolume = (e) => {
+  const onChangeMusicVolume = (e: any) => {
+    if (!musicRef.current) return;
     changeState(setState, state, { music: musicRef.current.value });
   };
-  const onChangeTTSVolume = (e) => {
+  const onChangeTTSVolume = (e: any) => {
+    if (!ttsRef.current) return;
     changeState(setState, state, { tts: ttsRef.current.value });
   };
-  const onChangeTTSLanguage = (e) => {
+  const onChangeTTSLanguage = (e: any) => {
+    if (!ttsLanguageRef.current) return;
     changeState(setState, state, { ttsLanguage: ttsLanguageRef.current.value });
   };
 
-  const onSave = (e) => {
+  const onSave = (e: any) => {
     e.preventDefault();
     FetchDiscord(
       "/discord/update-music-config",
@@ -79,7 +83,7 @@ const Page: NextPageWithLayout = () => {
           ttsLanguage: state.ttsLanguage,
         },
       },
-      (r) => {
+      (r: any) => {
         console.log(r);
         if (r.alert == "success") {
           changeCtx({

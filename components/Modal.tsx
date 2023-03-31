@@ -135,14 +135,18 @@ export function FormModal(
   content: any,
   title: any,
   {
-    formValidation = Function,
-    onSave = Function,
-    onCancel = Function,
-    onHide = Function,
+    formValidation,
+    onSave,
+    onCancel,
+    onHide,
+  }: {
+    formValidation?: () => boolean;
+    onSave?: () => void;
+    onCancel?: () => void;
+    onHide?: () => void;
   },
   outer: any
 ) {
-  console.log(title, outer);
   outer.modalRef = React.createRef<HTMLElement>();
 
   const getModal = () => {

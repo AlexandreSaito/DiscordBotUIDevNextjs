@@ -1,10 +1,10 @@
 import React from "react";
 import Layout from "./layout";
 import { NextPageWithLayout } from "./../../_app";
-import { DiscordContext } from "/context/discord";
-import { changeState } from "/js/objectHandler";
-import { FetchDiscord } from "/js/connection";
-import CustomMessageItem from "/components/discord/CustomMessageItem";
+import { DiscordContext } from "context/discord";
+import { changeState } from "js/objectHandler";
+import { FetchDiscord } from "js/connection";
+import CustomMessageItem from "components/discord/CustomMessageItem";
 
 function MessageItem(props: any) {
   let elClass = `list-group-item list-group-item-action ${
@@ -50,7 +50,7 @@ function getListFromGroup(
   return messageListElement;
 }
 
-const Page: NextPageWithLayout = (a) => {
+const Page: NextPageWithLayout = (a: any) => {
   const { ctx, changeCtx } = React.useContext(DiscordContext);
   const [state, setState] = React.useState({ loaded: false, selected: "" });
 
@@ -111,7 +111,7 @@ const Page: NextPageWithLayout = (a) => {
       <div className="col-4">
         <div
           className="list-group scrollable"
-          style={{ "--scrollable-height": "600px" }}
+          style={{ "--scrollable-height": "600px" } as React.CSSProperties}
         >
           {messageListElement}
         </div>

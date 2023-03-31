@@ -1,10 +1,10 @@
 import React from "react";
-import { NextPageWithLayout } from "/pages/_app";
+import { NextPageWithLayout } from "pages/_app";
 import Layout from "./layout";
-import { DiscordContext } from "/context/discord";
-import { FetchDiscord } from "/js/connection";
-import { changeState } from "/js/objectHandler";
-import { FormModal } from "/components/Modal";
+import { DiscordContext } from "context/discord";
+import { FetchDiscord } from "js/connection";
+import { changeState } from "js/objectHandler";
+import { FormModal, IOuterModal } from "components/Modal";
 
 const Page: NextPageWithLayout = (a: any) => {
   const { ctx, changeCtx } = React.useContext(DiscordContext);
@@ -15,7 +15,7 @@ const Page: NextPageWithLayout = (a: any) => {
 
   React.useEffect(() => {
     if (!state.loaded) {
-      FetchDiscord("/discord/audio-list", null, (r) => {
+      FetchDiscord("/discord/audio-list", null, (r: any) => {
         console.log(r);
         changeCtx({ audio: { list: r } });
         changeState(setState, state, { loaded: true });
@@ -30,21 +30,22 @@ const Page: NextPageWithLayout = (a: any) => {
   };
 
   const onAddAudio = (e: any) => {
-    mdlOuter.getModal().show();
+    if (mdlOuter.getModal) mdlOuter.getModal().show();
   };
   const validadeAddAudio = () => {
     if (
-      fileRef.current == null ||
-      fileRef.current.files == null ||
+      !fileRef.current ||
+      !fileRef.current.files ||
       fileRef.current.files.length == 0
     ) {
       return false;
     }
-    if (audioTitleRef.current == null || audioTitleRef.current.value == "") {
+    if (!audioTitleRef.current || audioTitleRef.current.value == "") {
       return false;
     }
+    return true;
   };
-  const onSaveAddAudio = (e: any) => {
+  const onSaveAddAudio = () => {
     if (!fileRef.current || !fileRef.current.files) return;
     var data = new FormData();
     for (const file of fileRef.current.files) {
@@ -61,7 +62,7 @@ const Page: NextPageWithLayout = (a: any) => {
     );
   };
 
-  const mdlOuter = {};
+  const mdlOuter = {} as IOuterModal;
   const mdlAddAudio = FormModal(
     <div className="row">
       <div className="col-6">
@@ -88,7 +89,7 @@ const Page: NextPageWithLayout = (a: any) => {
     mdlOuter
   );
 
-  let listaAudioElement = [];
+  let listaAudioElement: Array<any> = [];
   if (ctx.audio && ctx.audio.list) {
     listaAudioElement = ctx.audio.list.map((x, i) => {
       let elClass = `list-group-item list-group-item-action ${

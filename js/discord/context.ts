@@ -1,8 +1,15 @@
-import DiscordTypes from "./types";
-import DiscordAudioTypes from "./audio";
+import { IGuild, ITextChannel, IAudioChannel } from "./types";
+import { ICommandRule, ICommand } from "./command";
+import {
+  IMusic,
+  IAudio,
+  IPlaylistSimple,
+  IPlaylist,
+  EnumPlayState,
+} from "./audio";
 
 interface IAudioCtx {
-  list?: Array<DiscordAudioTypes.IAudio>;
+  list?: Array<IAudio>;
 }
 interface IChannelCtx {
   text: IChannelTextCtx;
@@ -11,41 +18,53 @@ interface IChannelCtx {
 interface IChannelTextCtx {
   currentMusic?: string;
   currentText?: string;
-  list?: Array<DiscordTypes.ITextChannel>;
+  list?: Array<ITextChannel>;
 }
 interface IChannelAudioCtx {
-  connected?: string;
-  list?: Array<DiscordTypes.IAudioChannel>;
-  channels: IChannelCtx;
+  connected?: IAudioChannel;
+  list?: Array<IAudioChannel>;
 }
 
 interface ICommandCtx {
-  commands?: Array<DiscordTypes.ICommand>;
+  commands?: Array<ICommand>;
   default?: any;
-  rules?: Array<DiscordTypes.ICommandRules>;
+  rules?: Array<ICommandRule>;
 }
 
 interface IGuildCtx {
-  current?: DiscordTypes.IGuild;
-  list?: DiscordTypes.IGuild;
+  current: null | undefined | IGuild;
+  list?: Array<IGuild>;
 }
 
-interface IContext {
+interface IPlayCtx {
+  current: null | undefined | IMusic | IAudio;
+  queue: null | undefined | Array<any>;
+  currentPlaylist: any;
+}
+
+interface IVolumeCtx {
+  tts: number;
+  music: number;
+  audio: number;
+}
+
+export interface IContext {
+  initLoad: boolean;
   audio: IAudioCtx;
   botName: string;
   channels: IChannelCtx;
   command: ICommandCtx;
   customMessages: any;
   guild: IGuildCtx;
-  initialLoad: number;
-  lastConnectionTime: string;
+  initialLoad?: number;
+  lastConnectionTime: null | undefined | string;
   lastLoadedTime: number;
-  listPlaylist: DiscordTypes.IPlaylistSimple;
+  listPlaylist?: IPlaylistSimple;
   on: boolean;
   play: IPlayCtx;
   playState: EnumPlayState;
   ttsLanguage: string;
-  ttsLanguages: any;
+  ttsLanguages?: any;
   volume: IVolumeCtx;
 }
 

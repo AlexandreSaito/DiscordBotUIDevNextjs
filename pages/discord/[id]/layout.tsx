@@ -6,20 +6,22 @@ import VoiceState from "components/discord/VoiceState";
 import BotState from "components/discord/BotState";
 import { copyChangeObject } from "js/objectHandler";
 import { FetchDiscord } from "js/connection";
+import { IContext } from "js/discord/context";
+import { EnumPlayState } from "js/discord/audio";
 
-const defaultBotState = {
+const defaultBotState: IContext = {
   initLoad: false,
   lastLoadedTime: 0,
   on: false,
   botName: "",
   lastConnectionTime: null,
   guild: {
-    current: { id: "" },
+    current: { id: "", name: "" },
     list: [],
   },
   channels: {
     voice: {
-      connected: "",
+      connected: { id: "", name: "" },
       list: [],
     },
     text: {
@@ -29,11 +31,7 @@ const defaultBotState = {
     },
   },
   play: {
-    current: {
-      title: "",
-      url: "",
-      fromPlaylist: false,
-    },
+    current: null,
     queue: [],
     currentPlaylist: {
       name: "",
@@ -44,8 +42,14 @@ const defaultBotState = {
   volume: {
     music: 1,
     tts: 1,
+    audio: 1,
   },
   ttsLanguage: "pt-br",
+  audio: {},
+  command: {},
+  customMessages: null,
+  playState: EnumPlayState.Idle,
+  ttsLanguages: undefined,
 };
 
 function discordOptionLink(title: string, link: string) {
@@ -97,7 +101,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }, [changeState]);
 
   const loadBotConfig = React.useCallback(() => {
-    if (state.guild.current.id == "") return;
+    if (!state.guild.current || state.guild.current.id == "") return;
     FetchDiscord(
       "/discord/get-bot-config",
       { body: JSON.stringify({ guildId: state.guild.current.id }) },
