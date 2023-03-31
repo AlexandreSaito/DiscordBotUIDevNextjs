@@ -6,13 +6,56 @@ import { changeState } from "/js/objectHandler";
 import { FetchDiscord } from "/js/connection";
 import CustomMessageItem from "/components/discord/CustomMessageItem";
 
+function MessageItem(props: any) {
+  let elClass = `list-group-item list-group-item-action ${
+    props.item.value == props.selected ? "active" : ""
+  }`;
+  const onClick = (e: any) => {
+    props.onSelectMessage(props.item.value);
+  };
+  return (
+    <button type="button" className={elClass} onClick={onClick}>
+      {props.item.name}
+    </button>
+  );
+}
+
+function getListFromGroup(
+  messageGroup: any,
+  currentSelected: string,
+  onSelectMessage: Function
+) {
+  let messageListElement: any = [];
+  let messageGroupTitles = Object.getOwnPropertyNames(messageGroup);
+  messageGroupTitles.sort().forEach((x, index) => {
+    let m = messageGroup[x];
+    messageListElement.push(
+      <div key={`main_${index}`}>
+        {x}
+        <div className="list-group">
+          {m.map((y: any, i: number) => {
+            return (
+              <MessageItem
+                key={i}
+                selected={currentSelected}
+                onSelectMessage={onSelectMessage}
+                item={y}
+              ></MessageItem>
+            );
+          })}
+        </div>
+      </div>
+    );
+  });
+  return messageListElement;
+}
+
 const Page: NextPageWithLayout = (a) => {
   const { ctx, changeCtx } = React.useContext(DiscordContext);
-  const [state, setState] = React.useState({ loaded: false });
-  console.log("context", ctx);
+  const [state, setState] = React.useState({ loaded: false, selected: "" });
 
   const loadMessages = () => {
-    FetchDiscord("/discord/get-custom-messages", null, (r) => {
+    FetchDiscord("/discord/get-custom-messages", null, (r: any) => {
       changeCtx({ customMessages: r });
       changeState(setState, state, { loaded: true });
     });
@@ -26,21 +69,34 @@ const Page: NextPageWithLayout = (a) => {
 
   if (!ctx.customMessages) return <></>;
 
-  let messagesList = Object.getOwnPropertyNames(ctx.customMessages)
+  let messageGroup: any = {};
+  Object.getOwnPropertyNames(ctx.customMessages)
     .sort()
-    .map((x, i) => {
-      let elClass = `list-group-item list-group-item-action ${
-        x == state.selected ? "active" : ""
-      }`;
-      const onClick = (e) => {
-        changeState(setState, state, { selected: x });
-      };
-      return (
-        <button type="button" key={i} className={elClass} onClick={onClick}>
-          {x}
-        </button>
-      );
+    .forEach((x) => {
+      let title = "no-group";
+      let remain = x;
+      if (x.startsWith("cmd")) {
+        if (x.includes("permission")) {
+          title = "permission";
+        } else {
+          title = `Command ${x.replace("cmd-", "")}`;
+          let index = title.indexOf("-");
+          remain = title.substring(index + 1, title.length);
+          title = title.substring(0, index);
+        }
+      }
+      if (!messageGroup[title]) messageGroup[title] = [];
+      messageGroup[title].push({ name: remain, value: x });
     });
+
+  const onSelectMessage = (message: string) => {
+    changeState(setState, state, { selected: message });
+  };
+  let messageListElement = getListFromGroup(
+    messageGroup,
+    state.selected,
+    onSelectMessage
+  );
 
   let message = (
     <CustomMessageItem
@@ -54,10 +110,10 @@ const Page: NextPageWithLayout = (a) => {
     <div className="row">
       <div className="col-4">
         <div
-          className="list-group"
-          style={{ overflowY: "scroll", maxHeight: "600px" }}
+          className="list-group scrollable"
+          style={{ "--scrollable-height": "600px" }}
         >
-          {messagesList}
+          {messageListElement}
         </div>
       </div>
       <div className="col-8">{message}</div>

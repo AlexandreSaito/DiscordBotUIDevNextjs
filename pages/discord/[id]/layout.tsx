@@ -7,17 +7,9 @@ import BotState from "/components/discord/BotState";
 import { copyChangeObject } from "/js/objectHandler";
 import { FetchDiscord } from "/js/connection";
 
-const EmojiPicker = React.lazy(
-  () =>
-    import(
-      /*webpackPrefetch: true,
-    webpackChunkName: "emoji-picker"*/
-      "./playlist"
-    )
-);
-
 const defaultBotState = {
-  lastLoadedTime: null,
+  initLoad: false,
+  lastLoadedTime: 0,
   on: false,
   botName: "",
   lastConnectionTime: null,
@@ -79,7 +71,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [state, setState] = React.useState(defaultBotState);
 
   const loadInit = () => {
-    FetchDiscord("/discord/init", null, (r) => {
+    FetchDiscord("/discord/init", null, (r: any) => {
       let data = {
         botName: r.botName,
         lastConnectionTime: r.lastConnectionTime,
@@ -96,19 +88,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const loadBotConfig = () => {
     if (state.guild.current.id == "") return;
-    /*
-      GET
-      Channels list; -OK
-      Current Voice Channel; -OK
-      Defaults Channels; -OK
-      Volumes; -OK
-      Current TTS Language; -OK
-      Current Music;
-     */
     FetchDiscord(
       "/discord/get-bot-config",
       { body: JSON.stringify({ guildId: state.guild.current.id }) },
-      (r) => {
+      (r: any) => {
         let data = {
           lastLoadedTime: Date.now(),
           ttsLanguage: r.ttsLanguage,
@@ -157,7 +140,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   if (!id) return <h3>Loading</h3>;
 
-  function changeState(newState) {
+  function changeState(newState: any) {
     let object = copyChangeObject(state, newState);
     if (object == false) return;
     console.log("BOT STATE CHANGING");

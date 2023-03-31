@@ -28,6 +28,7 @@ const Page: NextPageWithLayout = (a) => {
   const [state, setState] = React.useState({
     tts: ctx.volume.tts,
     music: ctx.volume.music,
+    audio: ctx.volume.audio,
     ttsLanguage: ctx.ttsLanguage,
   });
 
@@ -50,7 +51,11 @@ const Page: NextPageWithLayout = (a) => {
   const ttsLanguageRef = React.createRef();
   const ttsRef = React.createRef();
   const musicRef = React.createRef();
+  const audioRef = React.createRef();
 
+  const onChangeAudioVolume = (e) => {
+    changeState(setState, state, { audio: audioRef.current.value });
+  };
   const onChangeMusicVolume = (e) => {
     changeState(setState, state, { music: musicRef.current.value });
   };
@@ -69,6 +74,7 @@ const Page: NextPageWithLayout = (a) => {
         body: {
           ttsVolume: state.tts,
           musicVolume: state.music,
+          audioVolume: state.audio,
           ttsLanguage: state.ttsLanguage,
         },
       },
@@ -86,7 +92,7 @@ const Page: NextPageWithLayout = (a) => {
 
   return (
     <div className="row">
-      <div className="col-4 mb-2">
+      <div className="col-3 mb-2">
         <label className="form-label">Music Volume ({state.music}) </label>
         <input
           type="range"
@@ -98,7 +104,19 @@ const Page: NextPageWithLayout = (a) => {
           value={state.music}
         />
       </div>
-      <div className="col-4 mb-2">
+      <div className="col-3 mb-2">
+        <label className="form-label">Custom Audio Volume ({state.audio}) </label>
+        <input
+          type="range"
+          className="form-range"
+          min="1"
+          max="100"
+          ref={audioRef}
+          onChange={onChangeAudioVolume}
+          value={state.audio}
+        />
+      </div>
+      <div className="col-3 mb-2">
         <label className="form-label">TTS Volume ({state.tts}) </label>
         <input
           type="range"
@@ -110,7 +128,7 @@ const Page: NextPageWithLayout = (a) => {
           value={state.tts}
         />
       </div>
-      <div className="col-4 mb-2">
+      <div className="col-3 mb-2">
         <div className="form-floating">
           <select
             className="form-select"

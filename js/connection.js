@@ -1,9 +1,4 @@
 export function FetchDiscord(url, header, onDone) {
-  /*let o = {};
-  o[url] = { sended: true, body: header ? header.body : null };
-
-  if (onDone) return onDone(o);
-  return o;*/
   if (!onDone)
     return Fetch(`https://discordBotVDev.alexandres18.repl.co${url}`, header);
   Fetch(`https://discordBotVDev.alexandres18.repl.co${url}`, header)
@@ -13,7 +8,6 @@ export function FetchDiscord(url, header, onDone) {
     .then((x) => {
       onDone(x);
     });
-  //return Fetch(url, header);
 }
 
 export function Fetch(url, header) {

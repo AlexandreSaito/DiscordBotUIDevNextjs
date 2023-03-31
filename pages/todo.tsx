@@ -1,8 +1,4 @@
 import type { NextPage } from "next";
-import Head from "next/head";
-import Image from "next/image";
-import styles from "../styles/Home.module.css";
-import Link from "next/link";
 
 const todo = [
   {
@@ -124,13 +120,13 @@ const todo = [
   },
 ];
 
-function getTodoItem(index, item) {
+function getTodoItem(index: any, item: any) {
   index.i++;
   let sub = null;
   let itemDone = item.done;
   let i = index.i;
   if (item.sub) {
-    itemDone = item.sub.find((x) => !x.done) == undefined;
+    itemDone = item.sub.find((x: any) => !x.done) == undefined;
     let itens = [];
     for (let j = 0; j < item.sub.length; j++) {
       itens.push(getTodoItem(index, item.sub[j]));
