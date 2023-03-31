@@ -1,28 +1,35 @@
 import React from "react";
-import { FetchDiscord } from "/js/connection";
-import { showToast } from "/components/Toast";
+import { FetchDiscord } from "js/connection";
+import { showToast } from "components/Toast";
+import { ICustomMessageOption } from "js/discord/customMessage";
 
-export default function CustomMessageItem(props) {
+type MessageType = {
+  message: string;
+  possibilities: Array<ICustomMessageOption>;
+};
+
+export default function CustomMessageItem(props: any) {
   const [state, setState] = React.useState({ title: null });
-  let message = props.message;
+  let message: MessageType = props.message;
 
-  var textDescRef = React.createRef();
+  var textDescRef = React.createRef<HTMLTextAreaElement>();
 
   React.useEffect(() => {
     if (!message) return;
     if (state.title != props.title) {
       setState({ title: props.title });
-      textDescRef.current.value = message.message;
+      if (textDescRef.current) textDescRef.current.value = message.message;
     }
-  });
+  }, [setState, state, message, textDescRef, props]);
 
   if (!message) return <></>;
 
-  const onSaveMessage = (e) => {
+  const onSaveMessage = (e: any) => {
+    if (!textDescRef.current) return;
     FetchDiscord(
       "/discord/save-custom-messages",
       { body: { name: props.title, message: textDescRef.current.value } },
-      (r) => {
+      (r: any) => {
         showToast({
           title: "CUSTOM MESSAGE SAVE",
           message: r.message,
@@ -44,12 +51,14 @@ export default function CustomMessageItem(props) {
             return (
               <li key={i} className="list-group-item text-sm">
                 <b
-                  onClick={(e) => {
+                  onClick={(e: any) => {
                     let range = new Range();
                     range.setStart(e.target, 0);
                     range.setEnd(e.target, 1);
-                    document.getSelection().removeAllRanges();
-                    document.getSelection().addRange(range);
+                    let selection = document.getSelection();
+                    if (!selection) return;
+                    selection.removeAllRanges();
+                    selection.addRange(range);
                   }}
                 >
                   {text}
@@ -64,7 +73,7 @@ export default function CustomMessageItem(props) {
             className="form-control"
             placeholder=" "
             ref={textDescRef}
-            rows="3"
+            rows={3}
           ></textarea>
           <label>Message</label>
         </div>

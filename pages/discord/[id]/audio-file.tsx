@@ -8,7 +8,7 @@ import { FormModal } from "/components/Modal";
 
 const Page: NextPageWithLayout = (a: any) => {
   const { ctx, changeCtx } = React.useContext(DiscordContext);
-  const [state, setState] = React.useState({ loaded: false });
+  const [state, setState] = React.useState({ loaded: false, selected: 0 });
 
   const fileRef = React.createRef<HTMLInputElement>();
   const audioTitleRef = React.createRef<HTMLInputElement>();
@@ -23,11 +23,21 @@ const Page: NextPageWithLayout = (a: any) => {
     }
   });
 
+  console.log(state);
+
+  const changeSelected = (val: number) => {
+    changeState(setState, state, { selected: val });
+  };
+
   const onAddAudio = (e: any) => {
     mdlOuter.getModal().show();
   };
   const validadeAddAudio = () => {
-    if (fileRef.current == null || fileRef.current.files == null || fileRef.current.files.length == 0) {
+    if (
+      fileRef.current == null ||
+      fileRef.current.files == null ||
+      fileRef.current.files.length == 0
+    ) {
       return false;
     }
     if (audioTitleRef.current == null || audioTitleRef.current.value == "") {
@@ -35,8 +45,7 @@ const Page: NextPageWithLayout = (a: any) => {
     }
   };
   const onSaveAddAudio = (e: any) => {
-    if(!fileRef.current || !fileRef.current.files)
-      return;
+    if (!fileRef.current || !fileRef.current.files) return;
     var data = new FormData();
     for (const file of fileRef.current.files) {
       data.append("audioFile", file, file.name);
@@ -53,7 +62,6 @@ const Page: NextPageWithLayout = (a: any) => {
   };
 
   const mdlOuter = {};
-
   const mdlAddAudio = FormModal(
     <div className="row">
       <div className="col-6">
@@ -80,16 +88,40 @@ const Page: NextPageWithLayout = (a: any) => {
     mdlOuter
   );
 
+  let listaAudioElement = [];
+  if (ctx.audio && ctx.audio.list) {
+    listaAudioElement = ctx.audio.list.map((x, i) => {
+      let elClass = `list-group-item list-group-item-action ${
+        x.id == state.selected ? "active" : ""
+      }`;
+      const onClick = (e: any) => {
+        changeSelected(x.id);
+      };
+      return (
+        <button type="button" key={i} className={elClass} onClick={onClick}>
+          {x.title}
+        </button>
+      );
+    });
+  }
+
+  let currentAudio = null;
+  if (ctx.audio && ctx.audio.list) {
+    currentAudio = ctx.audio.list.find((x) => x.id == state.selected);
+  }
+
   return (
     <>
       <div className="row">
-        <div className="col-12">
+        <div className="col-12 mb-2">
           <button className="btn btn-primary" onClick={onAddAudio}>
             Add Audio
           </button>
         </div>
-        <div className="col-4">List</div>
-        <div className="col-8">Selected</div>
+        <div className="col-4">
+          <div className="list-group scrollable">{listaAudioElement}</div>
+        </div>
+        <div className="col-8">{currentAudio ? currentAudio.title : ""}</div>
         {mdlAddAudio}
       </div>
     </>

@@ -7,7 +7,7 @@ class Header extends Component {
     super(props);
   }
 
-  toggleSidebar() {
+  toggleSidebar(e: any) {
     var sidemenu = document.getElementById("main-sidemenu");
     console.log(sidemenu);
     if(sidemenu != null)
@@ -23,9 +23,7 @@ class Header extends Component {
               <div className="navbar-nav">
                 <a
                   className="nav-link"
-                  onClick={(e) => {
-                    this.toggleSidebar(e);
-                  }}
+                  onClick={this.toggleSidebar}
                 >
                   <FontAwesomeIcon icon={faBars} />
                 </a>

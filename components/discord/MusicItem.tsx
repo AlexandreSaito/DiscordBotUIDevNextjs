@@ -1,9 +1,10 @@
-import { confirmModal } from "/components/Modal";
-import { FetchDiscord } from "/js/connection";
-import { showToast } from "/components/Toast";
+import { confirmModal } from "components/Modal";
+import { FetchDiscord } from "js/connection";
+import { showToast } from "components/Toast";
+import { IMusic } from "js/discord/audio";
 
-export default function MusicItem(props) {
-  let music = props.music;
+export default function MusicItem(props: any) {
+  let music: IMusic = props.music;
 
   let addedDate = "";
   if (music.addedDate) {
@@ -17,7 +18,7 @@ export default function MusicItem(props) {
       .padStart(2, "0")}:${(music.duration % 60).toString().padStart(2, "0")}`;
   }
 
-  const onRemoveClick = (e) => {
+  const onRemoveClick = (e: any) => {
     confirmModal(
       "Remove Music",
       `Are you sure to remove ${music.title} from playlist?`,
@@ -29,7 +30,7 @@ export default function MusicItem(props) {
     FetchDiscord(
       "/discord/playlist-remove-music",
       { body: { playlistId: props.playlistId, musicId: music.id } },
-      (r) => {
+      (r: any) => {
         showToast({
           title: "REMOVE MUSIC",
           message: r.message,

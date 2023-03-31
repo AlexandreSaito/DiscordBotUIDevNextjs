@@ -23,13 +23,14 @@ function makeTTSLanguageOptions(languages) {
   return el;
 }
 
-const Page: NextPageWithLayout = (a) => {
+const Page: NextPageWithLayout = () => {
   const { ctx, changeCtx } = React.useContext(DiscordContext);
   const [state, setState] = React.useState({
     tts: ctx.volume.tts,
     music: ctx.volume.music,
     audio: ctx.volume.audio,
     ttsLanguage: ctx.ttsLanguage,
+    reload: false,
   });
 
   React.useEffect(() => {
@@ -46,7 +47,7 @@ const Page: NextPageWithLayout = (a) => {
         changeCtx({ ttsLanguages: r });
       });
     }
-  });
+  }, [ctx, changeCtx, state]);
 
   const ttsLanguageRef = React.createRef();
   const ttsRef = React.createRef();
@@ -105,7 +106,9 @@ const Page: NextPageWithLayout = (a) => {
         />
       </div>
       <div className="col-3 mb-2">
-        <label className="form-label">Custom Audio Volume ({state.audio}) </label>
+        <label className="form-label">
+          Custom Audio Volume ({state.audio}){" "}
+        </label>
         <input
           type="range"
           className="form-range"

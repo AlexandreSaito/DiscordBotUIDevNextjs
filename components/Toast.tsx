@@ -1,14 +1,20 @@
 import React from "react";
-import { copyChangeObject } from "./objectHandler";
+
+interface ToastParams {
+  message: string;
+  title: string;
+  alert?: string;
+  timeout?: number;
+}
 
 var lastKey = 0;
-var layout = null;
+var layout: any = null;
 
-export function setHandler(currentLayout) {
+export function setHandler(currentLayout: any) {
   layout = currentLayout;
 }
 
-export function showToast(params) {
+export function showToast(params: ToastParams) {
   layout.setToast(CreateToast(params));
 }
 
@@ -19,7 +25,7 @@ export function CreateToast({
   timeout = 10000,
 }) {
   var key = lastKey++;
-  const onClose = (e) => {
+  const onClose = (e: any) => {
     e.preventDefault();
     layout.removeToast(key);
   };

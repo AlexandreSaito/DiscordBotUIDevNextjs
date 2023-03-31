@@ -1,12 +1,12 @@
 import React from "react";
-import { changeState } from "/js/objectHandler";
-import { FetchDiscord } from "/js/connection";
-import { PlaylistForm } from "/components/discord/PlaylistForm";
-import MusicItem from "/components/discord/MusicItem";
-import { confirmModal, FormModal } from "/components/Modal";
-import { showToast } from "/components/Toast";
+import { changeState } from "js/objectHandler";
+import { FetchDiscord } from "js/connection";
+import { PlaylistForm } from "components/discord/PlaylistForm";
+import MusicItem from "components/discord/MusicItem";
+import { confirmModal, FormModal, IOuterModal } from "components/Modal";
+import { showToast } from "components/Toast";
 
-function PlaylistItem(props) {
+function PlaylistItem(props: any) {
   const [state, setState] = React.useState(props.playlist);
 
   React.useEffect(() => {
@@ -18,10 +18,8 @@ function PlaylistItem(props) {
       FetchDiscord(
         "/discord/get-playlist",
         { body: { playlistId: props.playlist.id } },
-        (r) => {
+        (r: any) => {
           console.log(r);
-          //let l = lists.find((x) => x.id == props.playlist.id);
-          //let list = JSON.parse(JSON.stringify(l));
           r.name = props.playlist.name;
           r.loaded = true;
           changeState(setState, state, r);
@@ -32,13 +30,13 @@ function PlaylistItem(props) {
 
   if (!props.playlist || props.playlist.id == 0 || !state) return;
 
-  var txtYTUrlRef = React.createRef();
+  var txtYTUrlRef = React.createRef<HTMLInputElement>();
 
   const reloadMusics = () => {
     changeState(setState, state, { loaded: false });
   };
 
-  const onDeleteClick = (e) => {
+  const onDeleteClick = (e: any) => {
     confirmModal(
       "Delete Playlist",
       `Are you sure to delete <b>${state.name}</b> that has <b>${state.musics.length}</b> musics?`,
@@ -49,7 +47,7 @@ function PlaylistItem(props) {
     FetchDiscord(
       "/discord/delete-playlist",
       { body: { playlistId: state.id } },
-      (r) => {
+      (r: any) => {
         if (r.alert == "success") {
           showToast({
             message: "Deleted with success",
@@ -67,7 +65,7 @@ function PlaylistItem(props) {
       }
     );
   };
-  const onEditPlaylist = (e) => {
+  const onEditPlaylist = (e: any) => {
     confirmModal(
       "Edit Playlist",
       `Are you sure to edit <b>${state.name}</b>`,
@@ -85,7 +83,7 @@ function PlaylistItem(props) {
           playMode: state.defaultReproduction,
         },
       },
-      (r) => {
+      (r: any) => {
         showToast({
           message: r.message,
           title: "PLAYLIST EDIT",
@@ -98,12 +96,14 @@ function PlaylistItem(props) {
     );
   };
 
-  const onAddMusic = (e) => {
+  const onAddMusic = (e: any) => {
+    if (!txtYTUrlRef.current || !modalAddMusicOuter.getModal) return;
     txtYTUrlRef.current.classList.remove("is-invalid");
     txtYTUrlRef.current.value = "";
     modalAddMusicOuter.getModal().show();
   };
   const validateAddMusic = () => {
+    if (!txtYTUrlRef.current) return false;
     if (txtYTUrlRef.current.value.length == 0) {
       txtYTUrlRef.current.classList.add("is-invalid");
       return false;
@@ -111,17 +111,18 @@ function PlaylistItem(props) {
     return true;
   };
   const onAddMusicSave = () => {
+    if (!txtYTUrlRef.current) return;
     //https://www.youtube.com/watch?v=7Gg9iQHfV5A
     FetchDiscord(
       "/discord/playlist-add-music",
       { body: { playlistId: state.id, url: txtYTUrlRef.current.value } },
-      (r) => {
+      (r: any) => {
         showToast({
           message: r.message,
           title: "PLAYLIST ADD MUSIC",
           alert: r.alert,
         });
-        modalAddMusicOuter.getModal().hide();
+        if (modalAddMusicOuter.getModal) modalAddMusicOuter.getModal().hide();
         if (r.alert == "success") {
           changeState(setState, state, { loaded: false });
           return;
@@ -131,27 +132,32 @@ function PlaylistItem(props) {
   };
 
   const globalEvents = {
-    onChangeAdd: (ref) => {
+    onChangeAdd: (ref: any) => {
+      if (!ref.current) return;
       changeState(setState, state, {
         globalPermissions: { canAdd: ref.current.checked },
       });
     },
-    onChangeRemoveMusic: (ref) => {
+    onChangeRemoveMusic: (ref: any) => {
+      if (!ref.current) return;
       changeState(setState, state, {
         globalPermissions: { canRemoveMusic: ref.current.checked },
       });
     },
-    onChangeDelete: (ref) => {
+    onChangeDelete: (ref: any) => {
+      if (!ref.current) return;
       changeState(setState, state, {
         globalPermissions: { canDelete: ref.current.checked },
       });
     },
-    onChangeLoop: (ref) => {
+    onChangeLoop: (ref: any) => {
+      if (!ref.current) return;
       changeState(setState, state, {
         inLoop: ref.current.checked,
       });
     },
-    onChangeRep: (ref) => {
+    onChangeRep: (ref: any) => {
+      if (!ref.current) return;
       changeState(setState, state, {
         defaultReproduction: ref.current.value,
       });
@@ -175,7 +181,7 @@ function PlaylistItem(props) {
       );
   }
 
-  var modalAddMusicOuter = {};
+  var modalAddMusicOuter = {} as IOuterModal;
   var modalAddMusic = FormModal(
     <div className="form-floating">
       <input className="form-control" placeholder=" " ref={txtYTUrlRef} />

@@ -1,9 +1,14 @@
 import React from "react";
-import { DiscordContext } from "/context/discord";
-import { FetchDiscord } from "/js/connection";
-import { showToast } from "/components/Toast";
+import { DiscordContext } from "context/discord";
+import { FetchDiscord } from "js/connection";
+import { showToast } from "components/Toast";
+import { IGuild, ITextChannel } from "js/discord/types";
 
-function getDdlGuild(current, list, ref) {
+function getDdlGuild(
+  current: null | undefined | IGuild,
+  list: null | undefined | Array<IGuild>,
+  ref: any
+) {
   let guildList = [];
 
   if (list) {
@@ -36,7 +41,7 @@ function getDdlGuild(current, list, ref) {
   );
 }
 
-function getOptionsTextChannel(list) {
+function getOptionsTextChannel(list: null | undefined | Array<ITextChannel>) {
   var options = [];
   options.push(
     <option key="-1" value="">
@@ -57,12 +62,12 @@ function BotState() {
   const { ctx, changeCtx } = React.useContext(DiscordContext);
 
   const ddlGuildRef = React.createRef();
-  const ddlMusicChannelRef = React.createRef();
-  const ddlTextChannelRef = React.createRef();
+  const ddlMusicChannelRef = React.createRef<HTMLSelectElement>();
+  const ddlTextChannelRef = React.createRef<HTMLSelectElement>();
 
-  var ddlMusicChannelValue = "";
-  var ddlTextChannelValue = "";
-  if (ctx.channels.text) {
+  var ddlMusicChannelValue;
+  var ddlTextChannelValue;
+  if (ctx.channels && ctx.channels.text) {
     ddlMusicChannelValue = ctx.channels.text.currentMusic;
     ddlTextChannelValue = ctx.channels.text.currentText;
   }
@@ -70,18 +75,20 @@ function BotState() {
   const ddlGuild = getDdlGuild(ctx.guild.current, ctx.guild.list, ddlGuildRef);
   const optionsTextChannel = getOptionsTextChannel(ctx.channels.text.list);
 
-  const showBotState = (e) => {
+  const showBotState = (e: any) => {
     e.preventDefault();
     console.log("BOT STATE ", ctx);
   };
 
-  const onChangeDdlMusicChannel = (e) => {
+  const onChangeDdlMusicChannel = (e: any) => {
+    if (!ddlMusicChannelRef.current) return;
     let channel = ddlMusicChannelRef.current.value;
     ddlMusicChannelRef.current.disabled = true;
     FetchDiscord(
       "/discord/set-text-channel",
       { body: { type: "MUSIC_CHANNEL", channelId: channel } },
-      (r) => {
+      (r: any) => {
+        if (!ddlMusicChannelRef.current) return;
         ddlMusicChannelRef.current.disabled = false;
         if (r.alert == "success") {
           showToast({
@@ -100,13 +107,15 @@ function BotState() {
       }
     );
   };
-  const onChangeDdlTextChannel = (e) => {
+  const onChangeDdlTextChannel = (e: any) => {
+    if (!ddlTextChannelRef.current) return;
     let channel = ddlTextChannelRef.current.value;
     ddlTextChannelRef.current.disabled = true;
     FetchDiscord(
       "/discord/set-text-channel",
       { body: { type: "TEXT_CHANNEL", channelId: channel } },
-      (r) => {
+      (r: any) => {
+        if (!ddlTextChannelRef.current) return;
         ddlTextChannelRef.current.disabled = false;
         if (r.alert == "success") {
           showToast({

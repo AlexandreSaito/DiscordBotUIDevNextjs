@@ -20,14 +20,14 @@ function optionsDdlReproductionType() {
   return lst;
 }
 
-export function PlaylistForm(state, events) {
+export function PlaylistForm(state: any, events: any) {
   let permissions = state.globalPermissions;
 
-  let canAddRef = React.createRef();
-  let canRemoveRef = React.createRef();
-  let canDeleteRef = React.createRef();
-  let inLoopRef = React.createRef();
-  let RepRef = React.createRef();
+  let canAddRef = React.createRef<HTMLInputElement>();
+  let canRemoveRef = React.createRef<HTMLInputElement>();
+  let canDeleteRef = React.createRef<HTMLInputElement>();
+  let inLoopRef = React.createRef<HTMLInputElement>();
+  let RepRef = React.createRef<HTMLSelectElement>();
 
   return (
     <div className="row">

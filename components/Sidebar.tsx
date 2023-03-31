@@ -19,7 +19,7 @@ function faIconOnList(icon: IconDefinition) {
   );
 }
 
-function menuItem(index: Index, title: string, ref) {
+function menuItem(index: Index, title: string, ref: any) {
   index.i++;
   return (
     <li key={index.i} id="menu-item-{index}">
@@ -64,7 +64,10 @@ class Sidebar extends React.Component {
             </a>
           </div>
           <div className="side-menu-content">
-            <ul className="fa-ul" style={{ "--fa-li-width": "0.9em" }}>
+            <ul
+              className="fa-ul"
+              style={{ "--fa-li-width": "0.9em" } as React.CSSProperties}
+            >
               {this.menuItens}
             </ul>
           </div>

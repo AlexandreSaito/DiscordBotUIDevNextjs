@@ -1,13 +1,16 @@
 import React from "react";
-import { displayModal, confirmModal } from "/components/Modal";
-import { DiscordContext } from "/context/discord";
-import { copyChangeObject, changeState } from "/js/objectHandler";
-import { FetchDiscord } from "/js/connection";
-import { showToast } from "/components/Toast";
+import { displayModal, confirmModal } from "components/Modal";
+import { DiscordContext } from "context/discord";
+import { copyChangeObject, changeState } from "js/objectHandler";
+import { FetchDiscord } from "js/connection";
+import { showToast } from "components/Toast";
 
-function CommandItem(props) {
+function CommandItem(props: any) {
   const { ctx, changeCtx } = React.useContext(DiscordContext);
-  const [state, setState] = React.useState({ name: "", rule: {} });
+  const [state, setState] = React.useState({
+    name: "",
+    rule: { active: false, everyoneCanSend: false },
+  });
 
   let cmd = props.cmd;
 
@@ -26,10 +29,11 @@ function CommandItem(props) {
     console.log(rule);
   }
 
-  let swActiveRef = React.createRef();
-  let chkEveryoneSendRef = React.createRef();
+  let swActiveRef = React.createRef<HTMLInputElement>();
+  let chkEveryoneSendRef = React.createRef<HTMLInputElement>();
 
-  const onChangeActive = (e) => {
+  const onChangeActive = (e: any) => {
+    if (!swActiveRef.current) return;
     let actived = swActiveRef.current.checked;
     changeState(setState, state, {
       rule: { active: actived },
@@ -40,8 +44,8 @@ function CommandItem(props) {
       () => {
         FetchDiscord(
           "/discord/active-inactive-commands",
-          { body: { commandName: state.name, active: state.rule.active } },
-          (r) => {
+          { body: { commandName: state.name, active: actived } },
+          (r: any) => {
             if (r.alert == "success") {
               showToast({
                 title: "ACTIVE/INACTIVE COMMAND",
@@ -67,12 +71,13 @@ function CommandItem(props) {
       }
     );
   };
-  const onChangeEveryoneCanSend = (e) => {
+  const onChangeEveryoneCanSend = (e: any) => {
+    if (!chkEveryoneSendRef.current) return;
     changeState(setState, state, {
       rule: { everyoneCanSend: chkEveryoneSendRef.current.checked },
     });
   };
-  const onSave = (e) => {
+  const onSave = (e: any) => {
     FetchDiscord(
       "/discord/update-command",
       {
@@ -81,7 +86,7 @@ function CommandItem(props) {
           canSend: state.rule.everyoneCanSend,
         },
       },
-      (r) => {
+      (r: any) => {
         if (r.alert == "success") {
           showToast({
             title: "COMMAND UPDATE",
@@ -98,7 +103,7 @@ function CommandItem(props) {
       }
     );
   };
-  const onAddRole = (e) => {
+  const onAddRole = (e: any) => {
     let modal = displayModal("ADD ROLE", "should show roles...");
   };
 

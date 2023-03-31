@@ -1,11 +1,11 @@
 import React from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { DiscordContext } from "/context/discord";
-import VoiceState from "/components/discord/VoiceState";
-import BotState from "/components/discord/BotState";
-import { copyChangeObject } from "/js/objectHandler";
-import { FetchDiscord } from "/js/connection";
+import { DiscordContext } from "context/discord";
+import VoiceState from "components/discord/VoiceState";
+import BotState from "components/discord/BotState";
+import { copyChangeObject } from "js/objectHandler";
+import { FetchDiscord } from "js/connection";
 
 const defaultBotState = {
   initLoad: false,
@@ -70,7 +70,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   console.log("DISCORD LAYOUT", id);
   const [state, setState] = React.useState(defaultBotState);
 
-  const loadInit = () => {
+  const changeState = React.useCallback(
+    (newState: any) => {
+      let object = copyChangeObject(state, newState);
+      if (object == false) return;
+      console.log("BOT STATE CHANGING");
+      setState(object);
+    },
+    [state]
+  );
+
+  const loadInit = React.useCallback(() => {
     FetchDiscord("/discord/init", null, (r: any) => {
       let data = {
         botName: r.botName,
@@ -84,9 +94,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       };
       changeState(data);
     });
-  };
+  }, [changeState]);
 
-  const loadBotConfig = () => {
+  const loadBotConfig = React.useCallback(() => {
     if (state.guild.current.id == "") return;
     FetchDiscord(
       "/discord/get-bot-config",
@@ -115,7 +125,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         changeState(data);
       }
     );
-  };
+  }, [state, changeState]);
 
   // load bot state
   React.useEffect(() => {
@@ -136,16 +146,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       };
     }
     loadBotConfig();
-  }, [state]);
+  }, [state, loadInit, loadBotConfig]);
 
   if (!id) return <h3>Loading</h3>;
-
-  function changeState(newState: any) {
-    let object = copyChangeObject(state, newState);
-    if (object == false) return;
-    console.log("BOT STATE CHANGING");
-    setState(object);
-  }
 
   return (
     <section>
