@@ -10,8 +10,8 @@ const Page: NextPageWithLayout = (a: any) => {
   const { ctx, changeCtx } = React.useContext(DiscordContext);
   const [state, setState] = React.useState({ loaded: false });
 
-  const fileRef = React.createRef();
-  const audioTitleRef = React.createRef();
+  const fileRef = React.createRef<HTMLInputElement>();
+  const audioTitleRef = React.createRef<HTMLInputElement>();
 
   React.useEffect(() => {
     if (!state.loaded) {
@@ -23,11 +23,20 @@ const Page: NextPageWithLayout = (a: any) => {
     }
   });
 
-  const onAddAudio = (e) => {
+  const onAddAudio = (e: any) => {
     mdlOuter.getModal().show();
   };
-  const validadeAddAudio = () => {};
-  const onSaveAddAudio = (e) => {
+  const validadeAddAudio = () => {
+    if (fileRef.current == null || fileRef.current.files == null || fileRef.current.files.length == 0) {
+      return false;
+    }
+    if (audioTitleRef.current == null || audioTitleRef.current.value == "") {
+      return false;
+    }
+  };
+  const onSaveAddAudio = (e: any) => {
+    if(!fileRef.current || !fileRef.current.files)
+      return;
     var data = new FormData();
     for (const file of fileRef.current.files) {
       data.append("audioFile", file, file.name);
@@ -39,7 +48,7 @@ const Page: NextPageWithLayout = (a: any) => {
     FetchDiscord(
       "/discord/audio-add",
       { isFormData: true, body: data },
-      (r) => {}
+      (r: any) => {}
     );
   };
 
@@ -52,7 +61,7 @@ const Page: NextPageWithLayout = (a: any) => {
           <input
             className="form-control"
             placeholder="   "
-            maxLength="25"
+            maxLength={25}
             ref={audioTitleRef}
           />
           <div className="invalid-feedback">Title is required</div>
@@ -60,9 +69,9 @@ const Page: NextPageWithLayout = (a: any) => {
         </div>
       </div>
       <div className="col-6">
-        <div class="mb-3">
-          <label class="form-label">Default file input example</label>
-          <input class="form-control" type="file" ref={fileRef} />
+        <div className="mb-3">
+          <label className="form-label">Default file input example</label>
+          <input className="form-control" type="file" ref={fileRef} />
         </div>
       </div>
     </div>,
