@@ -1,18 +1,24 @@
 import React from "react";
 
-var confirmationModal = null;
-var displayModalRef = null;
+var confirmationModal: any = null;
+var displayModalRef: any = null;
+
+export interface IOuterModal {
+  getModal?: Function;
+  modalRef?: any;
+  modal?: any;
+}
 
 export function ConfirmationModal() {
-  confirmationModal = React.createRef();
+  confirmationModal = React.createRef<HTMLElement>();
   return (
     <div
       className="modal"
-      tabIndex="-1"
+      tabIndex={-1}
       ref={confirmationModal}
       data-bs-backdrop="static"
     >
-      <div className="modal-dialog">
+      <div className="modal-dialog modal-lg">
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">Modal title</h5>
@@ -48,11 +54,11 @@ export function DisplayModal() {
   return (
     <div
       className="modal"
-      tabIndex="-1"
+      tabIndex={-1}
       ref={displayModalRef}
       data-bs-backdrop="static"
     >
-      <div className="modal-dialog">
+      <div className="modal-dialog modal-lg">
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title"></h5>
@@ -70,8 +76,15 @@ export function DisplayModal() {
   );
 }
 
-export function confirmModal(title = "", text = "", onConfirm, onCancel) {
-  let modal = bootstrap.Modal.getOrCreateInstance(confirmationModal.current);
+export function confirmModal(
+  title = "",
+  text = "",
+  onConfirm: Function,
+  onCancel?: Function
+) {
+  let modal = window.bootstrap.Modal.getOrCreateInstance(
+    confirmationModal.current
+  );
   let btnConfirm = confirmationModal.current.querySelector(
     "#mdl-btn-save-changes"
   );
@@ -82,7 +95,7 @@ export function confirmModal(title = "", text = "", onConfirm, onCancel) {
   confirmationModal.current.querySelector(".modal-title").innerHTML = title;
   confirmationModal.current.querySelector(".modal-body").innerHTML = text;
 
-  const onConfirmClick = (e) => {
+  const onConfirmClick = (e: any) => {
     e.preventDefault();
 
     btnCancel.removeEventListener("click", onCancelClick, false);
@@ -91,7 +104,7 @@ export function confirmModal(title = "", text = "", onConfirm, onCancel) {
     if (onConfirm) onConfirm();
     modal.hide();
   };
-  const onCancelClick = (e) => {
+  const onCancelClick = (e: any) => {
     e.preventDefault();
 
     btnConfirm.removeEventListener("click", onConfirmClick, false);
@@ -106,8 +119,10 @@ export function confirmModal(title = "", text = "", onConfirm, onCancel) {
   modal.show();
 }
 
-export function displayModal(title = "", content = null) {
-  let modal = bootstrap.Modal.getOrCreateInstance(displayModalRef.current);
+export function displayModal(title: string = "", content: any = null) {
+  let modal = window.bootstrap.Modal.getOrCreateInstance(
+    displayModalRef.current
+  );
 
   displayModalRef.current.querySelector(".modal-title").innerHTML = title;
   displayModalRef.current.querySelector(".modal-body").innerHTML = content;
@@ -115,33 +130,41 @@ export function displayModal(title = "", content = null) {
   modal.show();
   return modal;
 }
-
+type BoolFunction = () => boolean;
 export function FormModal(
-  content,
-  title,
-  { formValidation, onSave, onCancel, onHide },
-  outer
+  content: any,
+  title: any,
+  {
+    formValidation = Function,
+    onSave = Function,
+    onCancel = Function,
+    onHide = Function,
+  },
+  outer: any
 ) {
-  outer.modalRef = React.createRef();
+  console.log(title, outer);
+  outer.modalRef = React.createRef<HTMLElement>();
 
   const getModal = () => {
     if (!outer.modal)
-      outer.modal = bootstrap.Modal.getOrCreateInstance(outer.modalRef.current);
+      outer.modal = window.bootstrap.Modal.getOrCreateInstance(
+        outer.modalRef.current
+      );
     return outer.modal;
   };
 
   outer.getModal = getModal;
 
-  const onBtnSave = (e) => {
+  const onBtnSave = (e: any) => {
     e.preventDefault();
 
     if (formValidation) if (!formValidation()) return;
 
     if (onSave) onSave();
-    else outer.getModal().hide();
+    else if (outer.getModal) outer.getModal().hide();
   };
 
-  const onBtnCancel = (e) => {
+  const onBtnCancel = (e: any) => {
     e.preventDefault();
 
     let modal = getModal();
@@ -151,8 +174,8 @@ export function FormModal(
   };
 
   return (
-    <div className="modal" ref={outer.modalRef} tabIndex="-1">
-      <div className="modal-dialog">
+    <div className="modal" ref={outer.modalRef} tabIndex={-1}>
+      <div className="modal-dialog modal-lg">
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">{title}</h5>

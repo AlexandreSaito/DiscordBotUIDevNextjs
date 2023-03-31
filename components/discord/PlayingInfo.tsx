@@ -1,4 +1,6 @@
-export default function PlayingInfo(props) {
+import Image from "next/image";
+
+export default function PlayingInfo(props: any) {
   const info = props.info;
   return (
     <div className="row">
@@ -18,7 +20,10 @@ export default function PlayingInfo(props) {
         </p>
       </div>
       <div className="col-4">
-        <img src={info.thumbnail ? info.thumbnail.url : ""} />
+        <Image
+          src={info.thumbnail ? info.thumbnail.url : ""}
+          alt="Music thumbnail"
+        ></Image>
       </div>
     </div>
   );

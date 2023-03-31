@@ -163,7 +163,6 @@ const Page: NextPageWithLayout = (a) => {
     ) : null;
 
   const modalOuter = {};
-
   const modalCreatePlaylist = FormModal(
     <>
       <div className="form-floating mb-3">

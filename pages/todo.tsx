@@ -1,8 +1,4 @@
 import type { NextPage } from "next";
-import Head from "next/head";
-import Image from "next/image";
-import styles from "../styles/Home.module.css";
-import Link from "next/link";
 
 const todo = [
   {
@@ -46,8 +42,20 @@ const todo = [
         name: "custom messages",
         done: true,
         sub: [
-          { name: "use custom message", done: false },
+          { name: "use custom message", done: true },
           { name: "change messages (via web)", done: true },
+        ],
+      },
+      {
+        name: "custom audio",
+        done: true,
+        sub: [
+          { name: "play custom audio", done: false },
+          { name: "add custom audio", done: false },
+          { name: "add custom audio (via web)", done: false },
+          { name: "delete custom audio", done: false },
+          { name: "delete custom audio (via web)", done: false },
+          { name: "edit custom audio (via web)", done: false },
         ],
       },
       {
@@ -91,7 +99,7 @@ const todo = [
         sub: [
           { name: "dont active disabled", done: true },
           { name: "enable/disable", done: false },
-          { name: "enable/disable (via web)", done: false },
+          { name: "enable/disable (via web)", done: true },
           { name: "permission to call by user", done: false },
           { name: "permission to call by role", done: false },
           {
@@ -99,7 +107,7 @@ const todo = [
             done: false,
             sub: [
               { name: "by default", done: false },
-              { name: "by default (via web)", done: false },
+              { name: "by default (via web)", done: true },
               { name: "by role", done: false },
               { name: "by role (via web)", done: false },
               { name: "by user", done: false },
@@ -112,13 +120,13 @@ const todo = [
   },
 ];
 
-function getTodoItem(index, item) {
+function getTodoItem(index: any, item: any) {
   index.i++;
   let sub = null;
   let itemDone = item.done;
   let i = index.i;
   if (item.sub) {
-    itemDone = item.sub.find((x) => !x.done) == undefined;
+    itemDone = item.sub.find((x: any) => !x.done) == undefined;
     let itens = [];
     for (let j = 0; j < item.sub.length; j++) {
       itens.push(getTodoItem(index, item.sub[j]));
