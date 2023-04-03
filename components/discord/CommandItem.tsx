@@ -4,6 +4,8 @@ import { DiscordContext } from "context/discord";
 import { copyChangeObject, changeState } from "js/objectHandler";
 import { FetchDiscord } from "js/connection";
 import { showToast } from "components/Toast";
+import TableUser from "components/discord/TableUser";
+import TableRole from "components/discord/TableRole";
 
 function CommandItem(props: any) {
   const { ctx, changeCtx } = React.useContext(DiscordContext);
@@ -103,8 +105,30 @@ function CommandItem(props: any) {
       }
     );
   };
+
+  const onAddUser = (e: any) => {
+    const onSelectUser = (user) => {
+      modal.hide();
+    };
+    let modal = displayModal(
+      "ADD USER",
+      <TableUser
+        guildId={ctx.guild.current.id}
+        onSelectUser={onSelectUser}
+      ></TableUser>
+    );
+  };
   const onAddRole = (e: any) => {
-    let modal = displayModal("ADD ROLE", "should show roles...");
+    const onSelectRole = (role) => {
+      modal.hide();
+    };
+    let modal = displayModal(
+      "ADD ROLE",
+      <TableRole
+        guildId={ctx.guild.current.id}
+        onSelectRole={onSelectRole}
+      ></TableRole>
+    );
   };
 
   return (
@@ -139,6 +163,14 @@ function CommandItem(props: any) {
                 Everyone can send
               </label>
             </div>
+          </div>
+          <div className="col-12">
+            <button className="btn btn-primary" onClick={onAddUser}>
+              Add User
+            </button>
+            <button className="btn btn-primary" onClick={onAddRole}>
+              Add Role
+            </button>
           </div>
         </div>
       </div>

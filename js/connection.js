@@ -1,7 +1,9 @@
+const botUrl = "https://discordBotVDev.alexandres18.repl.co";
+//const botUrl = "https://discordBotVProd.alexandres18.repl.co";
+
 export function FetchDiscord(url, header, onDone) {
-  if (!onDone)
-    return Fetch(`https://discordBotVDev.alexandres18.repl.co${url}`, header);
-  Fetch(`https://discordBotVDev.alexandres18.repl.co${url}`, header)
+  if (!onDone) return Fetch(`${botUrl}${url}`, header);
+  Fetch(`${botUrl}${url}`, header)
     .then((x) => {
       return x.json();
     })
