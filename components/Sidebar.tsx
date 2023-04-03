@@ -40,6 +40,7 @@ class Sidebar extends React.Component {
     this.menuItens.push(menuItem(index, "Home", "/"));
     this.menuItens.push(menuItem(index, "POST", "/post"));
     this.menuItens.push(menuItem(index, "To Do", "/todo"));
+    this.menuItens.push(menuItem(index, "Discord", "/discord/logIn"));
     this.menuItens.push(menuItem(index, "Discord", "/discord/1"));
   }
 

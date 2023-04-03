@@ -1,3 +1,6 @@
+import React from "react";
+import { FetchDiscord } from "js/connection";
+
 export default function TableRole(props: any) {
   const [state, setState] = React.useState({ list: null });
 

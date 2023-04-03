@@ -1,5 +1,4 @@
 import React from "react";
-import { DiscordContext } from "context/discord";
 import { FetchDiscord } from "js/connection";
 
 export default function TableUser(props: any) {
@@ -32,7 +31,9 @@ export default function TableUser(props: any) {
                 Select
               </button>
             </th>
-            <td>{x.name}</td>
+            <td>
+              {x.name} {x.tag}
+            </td>
           </tr>
         );
       });

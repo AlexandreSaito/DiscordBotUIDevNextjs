@@ -5,12 +5,15 @@ import { DiscordContext } from "context/discord";
 import VoiceState from "components/discord/VoiceState";
 import BotState from "components/discord/BotState";
 import { copyChangeObject } from "js/objectHandler";
-import { FetchDiscord } from "js/connection";
+import { FetchDiscord, setBotUrl } from "js/connection";
 import { IContext } from "js/discord/context";
 import { EnumPlayState } from "js/discord/audio";
+import { getUrls } from "js/discord/url";
+import { LoginContext, LoginEnum } from "context/login";
 
 const defaultBotState: IContext = {
   initLoad: false,
+  logedAs: { discordId: "", discordUserName: "", web: true },
   lastLoadedTime: 0,
   on: false,
   botName: "",
@@ -72,6 +75,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { id } = router.query;
   console.log("DISCORD LAYOUT", id);
+  
+  setBotUrl(getUrls()[id - 1]);
+  const { getLoginFrom } = React.useContext(LoginContext);
+  const login = getLoginFrom(LoginEnum.Discord);
+  
   const [state, setState] = React.useState(defaultBotState);
 
   const changeState = React.useCallback(
@@ -88,6 +96,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     FetchDiscord("/discord/init", null, (r: any) => {
       let data = {
         botName: r.botName,
+        logedAs: { discordId: login.data.discordId, discordUserName: login.data.discordName },
         lastConnectionTime: r.lastConnectionTime,
         on: r.on,
         initLoad: Date.now(),
@@ -133,6 +142,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   // load bot state
   React.useEffect(() => {
+    if(!login) return;
     if (!state.initLoad) {
       loadInit();
       return;
@@ -154,6 +164,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   if (!id) return <h3>Loading</h3>;
 
+  if(!login) return <h3>Disconnected</h3>;
+  
+  if(!login.data.permissions.includes(parseInt(id))) return <h3>No permission</h3>;
+    
   return (
     <section>
       <h1>Discord - {state.botName}</h1>
