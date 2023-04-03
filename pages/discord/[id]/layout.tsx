@@ -142,7 +142,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   // load bot state
   React.useEffect(() => {
-    if(!login) return;
+    if(!id) return;
+    
+    if(!login || !login.data.permissions.includes(parseInt(id))) {
+      const router = useRouter();
+      router.push("/discord/login");
+      return;
+    };
+  
     if (!state.initLoad) {
       loadInit();
       return;

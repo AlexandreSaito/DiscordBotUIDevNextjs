@@ -79,7 +79,7 @@ function VoiceState(props: any) {
     //https://www.youtube.com/watch?v=7Gg9iQHfV5A
     FetchDiscord(
       "/discord/play-music",
-      { body: { url: txtYTUrlRef.current.value } },
+      { body: { url: txtYTUrlRef.current.value, user: ctx.logedAs } },
       (r: any) => {
         if (modalAddMusicOuter.getModal) modalAddMusicOuter.getModal().hide();
       }
