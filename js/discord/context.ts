@@ -67,6 +67,7 @@ export interface IContext {
   ttsLanguage: string;
   ttsLanguages?: any;
   volume: IVolumeCtx;
+  audioTimeout: number;
 }
 
 export interface IDiscordContext {

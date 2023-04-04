@@ -39,8 +39,6 @@ function VoiceState(props: any) {
   var ddlVoiceChannelValue = ctx.channels.voice.connected
     ? ctx.channels.voice.connected.id
     : "";
-  var musicTitle = "";
-  var musicUrl = "";
 
   const optionsVoiceChannel = getOptionsVoiceChannel(ctx.channels.voice.list);
 

@@ -9,17 +9,30 @@ import { LoginContext, LoginEnum } from "context/login";
 const Home: NextPageWithLayout = (props: any) => {
   const [state, setState] = React.useState({ data: null });
 
-  const userTagRef = React.createRef();
-  const userTagFeedbackRef = React.createRef();
-  const btnSendRef = React.createRef();
+  const userTagRef = React.createRef<HTMLInputElement>();
+  const userTagFeedbackRef = React.createRef<HTMLDivElement>();
+  const btnSendRef = React.createRef<HTMLButtonElement>();
 
   const { getLoginFrom, setLogin } = React.useContext(LoginContext);
 
+  const onUserTagMouseDown = (e: any) => {
+    if (e.key == "Enter" && btnSendRef.current) {
+      btnSendRef.current.click();
+    }
+  };
+
   const onSend = (e: any) => {
+    if (
+      !btnSendRef.current ||
+      !userTagRef.current ||
+      !userTagRef.current ||
+      !userTagFeedbackRef.current
+    )
+      return;
     btnSendRef.current.disabled = true;
     userTagRef.current.readOnly = true;
     userTagRef.current.classList.remove("is-invalid");
-    if (userTagFeedbackRef.current.value == "") {
+    if (userTagRef.current.value == "") {
       userTagRef.current.classList.add("is-invalid");
       userTagFeedbackRef.current.innerHTML = "User TAG não pode ser vazio!";
       return;
@@ -28,6 +41,13 @@ const Home: NextPageWithLayout = (props: any) => {
       "/api/discord/get-bot-list",
       { body: { userTag: userTagRef.current.value } },
       (r: any) => {
+        if (
+          !btnSendRef.current ||
+          !userTagRef.current ||
+          !userTagRef.current ||
+          !userTagFeedbackRef.current
+        )
+          return;
         console.log(r);
         if (r.alert == "danger") {
           btnSendRef.current.disabled = false;
@@ -44,8 +64,9 @@ const Home: NextPageWithLayout = (props: any) => {
   const router = useRouter();
 
   const onSelectBot = (id: number, discordId: string) => {
+    if (!userTagRef.current || !userTagRef.current) return;
     setLogin(LoginEnum.Discord, userTagRef.current.value, {
-      permissions: state.data.map((x) => x.id),
+      permissions: state.data ? state.data.map((x) => x.id) : [],
       discordId: discordId,
       discordName: userTagRef.current.value.split("#")[0],
     });
@@ -80,6 +101,7 @@ const Home: NextPageWithLayout = (props: any) => {
             className="form-control"
             placeholder="User#0000"
             ref={userTagRef}
+            onKeyDown={onUserTagMouseDown}
           />
           <button
             type="button"
