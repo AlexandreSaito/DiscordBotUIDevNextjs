@@ -138,6 +138,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             current: r.lastResource,
           },
           audioTimeout: r.audioTimeout,
+          audioQueue: r.audioQueue,
         };
         changeState(data);
       }

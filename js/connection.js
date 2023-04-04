@@ -7,6 +7,10 @@ export function setBotUrl(url) {
   }
 }
 
+export function getBotUrl() {
+  return botUrl;
+}
+
 export function FetchDiscord(url, header, onDone) {
   if (!botUrl) return null;
   if (!onDone) return Fetch(`${botUrl}${url}`, header);
