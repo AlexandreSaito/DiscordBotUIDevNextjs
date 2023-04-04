@@ -21,7 +21,7 @@ export default function TableUser(props: any) {
     : state.list.map((x, i) => {
         return (
           <tr key={i}>
-            <th scope="row" style={{ width: "80px" }}>
+            <td style={{ width: "80px" }}>
               <button
                 className="btn btn-sm btn-primary"
                 onClick={() => {
@@ -30,7 +30,7 @@ export default function TableUser(props: any) {
               >
                 Select
               </button>
-            </th>
+            </td>
             <td>
               {x.name} {x.tag}
             </td>
