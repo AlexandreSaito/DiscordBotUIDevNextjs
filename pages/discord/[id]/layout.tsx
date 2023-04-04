@@ -5,12 +5,15 @@ import { DiscordContext } from "context/discord";
 import VoiceState from "components/discord/VoiceState";
 import BotState from "components/discord/BotState";
 import { copyChangeObject } from "js/objectHandler";
-import { FetchDiscord } from "js/connection";
+import { FetchDiscord, setBotUrl } from "js/connection";
 import { IContext } from "js/discord/context";
 import { EnumPlayState } from "js/discord/audio";
+import { getUrls } from "js/discord/url";
+import { LoginContext, LoginEnum } from "context/login";
 
 const defaultBotState: IContext = {
   initLoad: false,
+  logedAs: { discordId: "", discordUserName: "", web: true },
   lastLoadedTime: 0,
   on: false,
   botName: "",
@@ -50,6 +53,7 @@ const defaultBotState: IContext = {
   customMessages: null,
   playState: EnumPlayState.Idle,
   ttsLanguages: undefined,
+  audioTimeout: 0,
 };
 
 function discordOptionLink(title: string, link: string) {
@@ -68,10 +72,17 @@ function discordOptionLink(title: string, link: string) {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const reloadBotStateDelay = 10000;
   const router = useRouter();
+  const reloadBotStateDelay = 10000;
   const { id } = router.query;
   console.log("DISCORD LAYOUT", id);
+  
+  const discordId = !id || Array.isArray(id) ? 0 : parseInt(id);
+  
+  setBotUrl(getUrls()[discordId - 1]);
+  const { getLoginFrom } = React.useContext(LoginContext);
+  const login = getLoginFrom(LoginEnum.Discord);
+  
   const [state, setState] = React.useState(defaultBotState);
 
   const changeState = React.useCallback(
@@ -88,6 +99,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     FetchDiscord("/discord/init", null, (r: any) => {
       let data = {
         botName: r.botName,
+        logedAs: { discordId: login.data.discordId, discordUserName: login.data.discordName },
         lastConnectionTime: r.lastConnectionTime,
         on: r.on,
         initLoad: Date.now(),
@@ -98,7 +110,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       };
       changeState(data);
     });
-  }, [changeState]);
+  }, [changeState, login]);
 
   const loadBotConfig = React.useCallback(() => {
     if (!state.guild.current || state.guild.current.id == "") return;
@@ -125,6 +137,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           play: {
             current: r.lastResource,
           },
+          audioTimeout: r.audioTimeout,
         };
         changeState(data);
       }
@@ -133,6 +146,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   // load bot state
   React.useEffect(() => {
+    if(discordId == 0 || !login || !login.data.permissions.includes(discordId)) return;
+  
     if (!state.initLoad) {
       loadInit();
       return;
@@ -150,13 +165,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       };
     }
     loadBotConfig();
-  }, [state, loadInit, loadBotConfig]);
+  }, [state, loadInit, loadBotConfig, discordId, login]);
 
   if (!id) return <h3>Loading</h3>;
 
+  if(!login || !login.data.permissions.includes(discordId)) {
+    router.push("/discord/logIn");
+    return <></>;
+  };
+    
   return (
     <section>
-      <h1>Discord - {state.botName}</h1>
+      <h1>Discord - <em>{login.data.discordName}</em></h1>
       <DiscordContext.Provider value={{ ctx: state, changeCtx: changeState }}>
         <section>
           <BotState></BotState>
@@ -164,14 +184,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="card">
             <div className="card-header">
               <ul className="nav nav-tabs card-header-tabs">
-                {discordOptionLink("Commands", `/discord/${id}/commands`)}
+                {discordOptionLink("Commands", `/discord/${discordId}/commands`)}
                 {discordOptionLink(
                   "Custom Messages",
-                  `/discord/${id}/custom-messages`
+                  `/discord/${discordId}/custom-messages`
                 )}
-                {discordOptionLink("Music Conf", `/discord/${id}/music-config`)}
-                {discordOptionLink("Playlists", `/discord/${id}/playlist`)}
-                {discordOptionLink("Audio Files", `/discord/${id}/audio-file`)}
+                {discordOptionLink("Music Conf", `/discord/${discordId}/music-config`)}
+                {discordOptionLink("Playlists", `/discord/${discordId}/playlist`)}
+                {discordOptionLink("Audio Files", `/discord/${discordId}/audio-file`)}
               </ul>
             </div>
             <div className="card-body">{children}</div>

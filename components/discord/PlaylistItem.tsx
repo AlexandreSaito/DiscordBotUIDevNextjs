@@ -1,4 +1,5 @@
 import React from "react";
+import { DiscordContext } from "context/discord";
 import { changeState } from "js/objectHandler";
 import { FetchDiscord } from "js/connection";
 import { PlaylistForm } from "components/discord/PlaylistForm";
@@ -7,6 +8,7 @@ import { confirmModal, FormModal, IOuterModal } from "components/Modal";
 import { showToast } from "components/Toast";
 
 function PlaylistItem(props: any) {
+  const { ctx, changeCtx } = React.useContext(DiscordContext);
   const [state, setState] = React.useState(props.playlist);
 
   React.useEffect(() => {
@@ -115,7 +117,13 @@ function PlaylistItem(props: any) {
     //https://www.youtube.com/watch?v=7Gg9iQHfV5A
     FetchDiscord(
       "/discord/playlist-add-music",
-      { body: { playlistId: state.id, url: txtYTUrlRef.current.value } },
+      {
+        body: {
+          playlistId: state.id,
+          url: txtYTUrlRef.current.value,
+          user: ctx.logedAs,
+        },
+      },
       (r: any) => {
         showToast({
           message: r.message,

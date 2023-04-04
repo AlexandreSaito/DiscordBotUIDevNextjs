@@ -116,6 +116,7 @@ const Page: NextPageWithLayout = () => {
           permissions: playlistState.globalPermissions,
           playLoop: playlistState.inLoop,
           playMode: playlistState.defaultReproduction,
+          user: ctx.logedAs,
         },
       },
       (r: any) => {

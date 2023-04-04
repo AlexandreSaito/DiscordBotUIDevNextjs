@@ -39,8 +39,6 @@ function VoiceState(props: any) {
   var ddlVoiceChannelValue = ctx.channels.voice.connected
     ? ctx.channels.voice.connected.id
     : "";
-  var musicTitle = "";
-  var musicUrl = "";
 
   const optionsVoiceChannel = getOptionsVoiceChannel(ctx.channels.voice.list);
 
@@ -79,7 +77,7 @@ function VoiceState(props: any) {
     //https://www.youtube.com/watch?v=7Gg9iQHfV5A
     FetchDiscord(
       "/discord/play-music",
-      { body: { url: txtYTUrlRef.current.value } },
+      { body: { url: txtYTUrlRef.current.value, user: ctx.logedAs } },
       (r: any) => {
         if (modalAddMusicOuter.getModal) modalAddMusicOuter.getModal().hide();
       }

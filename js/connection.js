@@ -1,7 +1,26 @@
+var botUrl;
+
+export function setBotUrl(url) {
+  if (!botUrl) {
+    botUrl = url;
+    console.log(botUrl);
+  }
+}
+
 export function FetchDiscord(url, header, onDone) {
-  if (!onDone)
-    return Fetch(`https://discordBotVDev.alexandres18.repl.co${url}`, header);
-  Fetch(`https://discordBotVDev.alexandres18.repl.co${url}`, header)
+  if (!botUrl) return null;
+  if (!onDone) return Fetch(`${botUrl}${url}`, header);
+  Fetch(`${botUrl}${url}`, header)
+    .then((x) => {
+      return x.json();
+    })
+    .then((x) => {
+      onDone(x);
+    });
+}
+
+export function FetchResponse(url, header, onDone) {
+  Fetch(url, header)
     .then((x) => {
       return x.json();
     })

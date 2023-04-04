@@ -30,6 +30,7 @@ const Page: NextPageWithLayout = () => {
     music: ctx.volume.music,
     audio: ctx.volume.audio,
     ttsLanguage: ctx.ttsLanguage,
+    audioTimeout: ctx.audioTimeout,
     reload: false,
   });
 
@@ -41,6 +42,7 @@ const Page: NextPageWithLayout = () => {
         tts: ctx.volume.tts,
         music: ctx.volume.music,
         ttsLanguage: ctx.ttsLanguage,
+        audioTimeout: ctx.audioTimeout,
       });
     if (!ctx.ttsLanguages) {
       FetchDiscord("/discord/list-tts-language", null, (r: any) => {
@@ -53,6 +55,7 @@ const Page: NextPageWithLayout = () => {
   const ttsRef = React.createRef<HTMLInputElement>();
   const musicRef = React.createRef<HTMLInputElement>();
   const audioRef = React.createRef<HTMLInputElement>();
+  const audioTimeoutRef = React.createRef<HTMLInputElement>();
 
   const onChangeAudioVolume = (e: any) => {
     if (!audioRef.current) return;
@@ -70,6 +73,10 @@ const Page: NextPageWithLayout = () => {
     if (!ttsLanguageRef.current) return;
     changeState(setState, state, { ttsLanguage: ttsLanguageRef.current.value });
   };
+  const onChangeAudioTimeout = (e: any) => {
+    if (!audioTimeoutRef.current) return;
+    changeState(setState, state, { audioTimeout: audioTimeoutRef.current.value });
+  };
 
   const onSave = (e: any) => {
     e.preventDefault();
@@ -81,6 +88,7 @@ const Page: NextPageWithLayout = () => {
           musicVolume: state.music,
           audioVolume: state.audio,
           ttsLanguage: state.ttsLanguage,
+          audioTimeout: state.audioTimeout,
         },
       },
       (r: any) => {
@@ -95,9 +103,13 @@ const Page: NextPageWithLayout = () => {
     );
   };
 
+  var audioTimeoutMinutes = Math.floor(state.audioTimeout/60000);
+  var audioTimeoutSeconds = Math.floor((state.audioTimeout%60000)/ 1000);
+  var audioTimeoutFormated = `${audioTimeoutMinutes.toString().padStart(2, '0')}:${audioTimeoutSeconds.toString().padStart(2, '0')} mm:ss`;
+  
   return (
     <div className="row">
-      <div className="col-3 mb-2">
+      <div className="col-4 mb-2">
         <label className="form-label">Music Volume ({state.music}) </label>
         <input
           type="range"
@@ -109,7 +121,7 @@ const Page: NextPageWithLayout = () => {
           value={state.music}
         />
       </div>
-      <div className="col-3 mb-2">
+      <div className="col-4 mb-2">
         <label className="form-label">
           Custom Audio Volume ({state.audio}){" "}
         </label>
@@ -123,7 +135,7 @@ const Page: NextPageWithLayout = () => {
           value={state.audio}
         />
       </div>
-      <div className="col-3 mb-2">
+      <div className="col-4 mb-2">
         <label className="form-label">TTS Volume ({state.tts}) </label>
         <input
           type="range"
@@ -135,7 +147,20 @@ const Page: NextPageWithLayout = () => {
           value={state.tts}
         />
       </div>
-      <div className="col-3 mb-2">
+      <div className="col-4 mb-2">
+        <label className="form-label">Time to auto disconnect ({audioTimeoutFormated}) </label>
+        <input
+          type="range"
+          className="form-range"
+          min="30000"
+          max="18000000"
+          step="30000"
+          ref={audioTimeoutRef}
+          onChange={onChangeAudioTimeout}
+          value={state.audioTimeout}
+        />
+      </div>
+      <div className="col-4 mb-2">
         <div className="form-floating">
           <select
             className="form-select"

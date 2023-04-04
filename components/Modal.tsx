@@ -2,6 +2,8 @@ import React from "react";
 
 var confirmationModal: any = null;
 var displayModalRef: any = null;
+var mdlDisplay;
+var setMdlDisplay;
 
 export interface IOuterModal {
   getModal?: Function;
@@ -51,6 +53,10 @@ export function ConfirmationModal() {
 
 export function DisplayModal() {
   displayModalRef = React.createRef();
+  var [get, set] = React.useState({ content: null });
+  mdlDisplay = get;
+  setMdlDisplay = set;
+
   return (
     <div
       className="modal"
@@ -69,7 +75,7 @@ export function DisplayModal() {
               aria-label="Close"
             ></button>
           </div>
-          <div className="modal-body"></div>
+          <div className="modal-body">{mdlDisplay.content}</div>
         </div>
       </div>
     </div>
@@ -125,11 +131,11 @@ export function displayModal(title: string = "", content: any = null) {
   );
 
   displayModalRef.current.querySelector(".modal-title").innerHTML = title;
-  displayModalRef.current.querySelector(".modal-body").innerHTML = content;
-
+  setMdlDisplay({ content: content });
   modal.show();
   return modal;
 }
+
 type BoolFunction = () => boolean;
 export function FormModal(
   content: any,

@@ -140,7 +140,7 @@ function BotState() {
       <div className="card-body">
         <div className="row">
           <div className="col-12 mb-3">
-            BOT is <b>{ctx.on ? "ON" : "OFF"}</b> at
+            BOT <b>{ctx.botName}</b> is <b>{ctx.on ? "ON" : "OFF"}</b> at
             <div style={{ width: "325px", display: "inline-block" }}>
               <div className="input-group input-group-sm">
                 {ddlGuild}

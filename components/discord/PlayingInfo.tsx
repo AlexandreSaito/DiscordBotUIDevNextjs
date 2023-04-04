@@ -20,10 +20,13 @@ export default function PlayingInfo(props: any) {
         </p>
       </div>
       <div className="col-4">
-        <Image
+        <img
           src={info.thumbnail ? info.thumbnail.url : ""}
           alt="Music thumbnail"
-        ></Image>
+          className="float-end"
+          width={info.thumbnail ? info.thumbnail.width : 0}
+          height={info.thumbnail ? info.thumbnail.height : 0}
+        />
       </div>
     </div>
   );

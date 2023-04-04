@@ -5,6 +5,8 @@ import Head from "next/head";
 import Script from "next/script";
 import { ConfirmationModal, DisplayModal } from "components/Modal";
 import { setHandler } from "components/Toast";
+import { LoginContext, LoginEnum } from "context/login";
+import { changeState } from "js/objectHandler";
 
 export default function RootLayout({
   children,
@@ -14,7 +16,7 @@ export default function RootLayout({
   const [toastState, setToastState] = React.useState({ toast: [] } as {
     toast: Array<any>;
   });
-
+  const [loginState, setLoginState] = React.useState({});
   const toastHandler = {
     setToast: (toast: any) => {
       setToastState({
@@ -31,7 +33,19 @@ export default function RootLayout({
       });
     },
   };
+
   setHandler(toastHandler);
+
+  const getLoginFrom = (loginType: LoginEnum) => {
+    return loginState[LoginEnum.Discord];
+  };
+
+  const setLogin = (loginType: LoginEnum, name: string, data: any) => {
+    let login = {};
+    login[loginType] = { name: name, data: data };
+    changeState(setLoginState, loginState, login);
+  };
+
   return (
     <section className="content">
       <link
@@ -44,7 +58,13 @@ export default function RootLayout({
       </Head>
       <Header></Header>
       <Sidebar></Sidebar>
-      <main className="">{children}</main>
+      <main className="">
+        <LoginContext.Provider
+          value={{ getLoginFrom: getLoginFrom, setLogin: setLogin }}
+        >
+          {children}
+        </LoginContext.Provider>
+      </main>
       {ConfirmationModal()}
       {DisplayModal()}
       <div

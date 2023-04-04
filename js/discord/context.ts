@@ -1,4 +1,4 @@
-import { IGuild, ITextChannel, IAudioChannel } from "./types";
+import { IGuild, ITextChannel, IAudioChannel, IDiscordUser } from "./types";
 import { ICommandRule, ICommand } from "./command";
 import {
   IMusic,
@@ -50,6 +50,7 @@ interface IVolumeCtx {
 
 export interface IContext {
   initLoad: boolean;
+  logedAs: IDiscordUser;
   audio: IAudioCtx;
   botName: string;
   channels: IChannelCtx;
@@ -66,6 +67,7 @@ export interface IContext {
   ttsLanguage: string;
   ttsLanguages?: any;
   volume: IVolumeCtx;
+  audioTimeout: number;
 }
 
 export interface IDiscordContext {

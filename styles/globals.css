@@ -130,6 +130,10 @@ header .nav-link {
   padding: 2px 5px 2px 5px;
 }
 
+.table-sm .btn-sm {
+  padding: 0px 0.5rem;
+}
+
 .text-sm {
   font-size: 13px;
 }
