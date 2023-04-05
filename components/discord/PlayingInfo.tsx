@@ -25,6 +25,12 @@ export default function PlayingInfo(props: any) {
     );
   }
 
+  if (origin && origin.fromAudioFile) {
+    videoName = `${info.id.toString().padStart(3, "0")} - ${videoName}`;
+    thumbnailUrl = "";
+    playlistInfoEl = null;
+  }
+
   return (
     <div className="row">
       <div className="col-8">
