@@ -105,7 +105,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         initLoad: Date.now(),
         guild: {
           list: r.guilds,
-          current: r.guilds[0],
+          current: {id: login.data.discordGuild, name: login.data.discordGuildName},
         },
       };
       changeState(data);

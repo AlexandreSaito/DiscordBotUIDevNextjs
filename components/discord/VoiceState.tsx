@@ -132,7 +132,12 @@ function VoiceState(props: any) {
     ctx.play.current.audioInfo &&
     (ctx.play.current.isPlaying || ctx.play.current.wasPaused)
   ) {
-    playingInfo = <PlayingInfo info={ctx.play.current.audioInfo}></PlayingInfo>;
+    playingInfo = (
+      <PlayingInfo
+        info={ctx.play.current.audioInfo}
+        origin={ctx.play.current.origin}
+      ></PlayingInfo>
+    );
     isPlaying = ctx.play.current.isPlaying;
     isPaused = ctx.play.current.wasPaused;
   }

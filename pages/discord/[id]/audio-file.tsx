@@ -63,6 +63,7 @@ const Page: NextPageWithLayout = (a: any) => {
     if (!fileRef.current || !fileRef.current.files) return;
     var data = new FormData();
     for (const file of fileRef.current.files) {
+      console.log(file);
       data.append("audioFile", file, file.name);
     }
     data.append("title", audioTitleRef.current.value);
@@ -101,7 +102,7 @@ const Page: NextPageWithLayout = (a: any) => {
       <div className="col-12">
         <div className="mb-3">
           <label className="form-label">Default file input example</label>
-          <input className="form-control" type="file" ref={fileRef} />
+          <input className="form-control" type="file" ref={fileRef} accept="audio/*" />
         </div>
       </div>
     </div>,

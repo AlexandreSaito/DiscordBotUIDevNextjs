@@ -147,7 +147,7 @@ const Page: NextPageWithLayout = () => {
           value={state.tts}
         />
       </div>
-      <div className="col-4 mb-2">
+      <div className="col-8 mb-2">
         <label className="form-label">Time to auto disconnect ({audioTimeoutFormated}) </label>
         <input
           type="range"

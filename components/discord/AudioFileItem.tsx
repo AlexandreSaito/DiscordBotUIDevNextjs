@@ -61,6 +61,20 @@ function AudioFileItem(props: any) {
     );
   };
 
+  const onPlayAudio = () => {
+    FetchDiscord(
+      "/discord/audio-add-queue",
+      {
+        body: {
+          audioTitle: audioFile.title,
+        },
+      },
+      (r) => {
+        console.log(r);
+      }
+    );
+  };
+
   if (!audioFile) return <> </>;
 
   return (
@@ -101,6 +115,9 @@ function AudioFileItem(props: any) {
         </div>
       </div>
       <div className="card-footer">
+        <button className="btn btn-primary" onClick={onPlayAudio}>
+          Play
+        </button>
         <button className="btn btn-success float-end" onClick={onSave}>
           Save
         </button>
