@@ -79,6 +79,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   
   const discordId = !id || Array.isArray(id) ? 0 : parseInt(id);
   
+  //console.log(discordId - 1, getUrls()[discordId - 1]);
   setBotUrl(getUrls()[discordId - 1]);
   const { getLoginFrom } = React.useContext(LoginContext);
   const login = getLoginFrom(LoginEnum.Discord);

@@ -13,22 +13,24 @@ export default function PlayingInfo(props: any) {
   let videoName = info.title;
   let playlistInfoEl = null;
 
-  let thumbnailUrl = info.thumbnail ? info.thumbnail.url : "";
+  let thumbnailUrl = null;
 
-  if (origin && origin.fromPlaylist) {
-    videoName = `${info.id.toString().padStart(2, "0")} - ${videoName}`;
-    thumbnailUrl = info.thumbnailUrl;
-    playlistInfoEl = (
-      <p className="card-text">
-        Playlist Name: <b>{origin.playlistName}</b>
-      </p>
-    );
-  }
-
-  if (origin && origin.fromAudioFile) {
-    videoName = `${info.id.toString().padStart(3, "0")} - ${videoName}`;
-    thumbnailUrl = "";
-    playlistInfoEl = null;
+  if (origin && origin.from) {
+    if (origin.from == "url") {
+      thumbnailUrl = info.thumbnail ? info.thumbnail.url : "";
+    } else if (origin.from == "playlist") {
+      videoName = `${info.id.toString().padStart(2, "0")} - ${videoName}`;
+      thumbnailUrl = info.thumbnailUrl;
+      playlistInfoEl = (
+        <p className="card-text">
+          Playlist Name: <b>{origin.playlistName}</b>
+        </p>
+      );
+    } else if (origin.from == "audio") {
+      videoName = `${info.id.toString().padStart(3, "0")} - ${videoName}`;
+      thumbnailUrl = "";
+      playlistInfoEl = null;
+    }
   }
 
   return (

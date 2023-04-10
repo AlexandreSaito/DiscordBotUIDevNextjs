@@ -13,6 +13,7 @@ export function getBotUrl() {
 
 export function FetchDiscord(url, header, onDone) {
   if (!botUrl) return null;
+  //console.log(botUrl);
   if (!onDone) return Fetch(`${botUrl}${url}`, header);
   Fetch(`${botUrl}${url}`, header)
     .then((x) => {
