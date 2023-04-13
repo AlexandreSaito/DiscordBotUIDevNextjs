@@ -10,6 +10,7 @@ import { IContext } from "js/discord/context";
 import { EnumPlayState } from "js/discord/audio";
 import { getUrls } from "js/discord/url";
 import { LoginContext, LoginEnum } from "context/login";
+import { onMessageReceive } from "js/discord/sseEvents/onMessageReceive";
 
 const defaultBotState: IContext = {
   initLoad: false,
@@ -112,39 +113,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     });
   }, [changeState, login]);
 
-  const loadBotConfig = React.useCallback(() => {
-    if (!state.guild.current || state.guild.current.id == "") return;
-    FetchDiscord(
-      "/discord/get-bot-config",
-      { body: JSON.stringify({ guildId: state.guild.current.id }) },
-      (r: any) => {
-        let data = {
-          lastLoadedTime: Date.now(),
-          ttsLanguage: r.ttsLanguage,
-          volume: r.volume,
-          channels: {
-            voice: {
-              connected: r.voiceChannel.current,
-              list: r.voiceChannel.list,
-            },
-            text: {
-              list: r.textChannels.list,
-              currentMusic: r.textChannels.music,
-              currentText: r.textChannels.text,
-            },
-          },
-          playState: r.audioState,
-          play: {
-            current: r.lastResource,
-          },
-          audioTimeout: r.audioTimeout,
-          audioQueue: r.audioQueue,
-        };
-        changeState(data);
-      }
-    );
-  }, [state, changeState]);
-
   // load bot state
   React.useEffect(() => {
     if(discordId == 0 || !login || !login.data.permissions.includes(discordId)) return;
@@ -161,7 +129,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       body: { discordID: login.data.discordId, discordGuild: state.guild.current.id },
       onOpen: (res: any) => { console.log("New connection"); if(!res.ok) console.log("res", res); }, 
       onClose: () => { console.log("Connection closed by the server"); }, 
-      onMessage: (event: any) => { console.log(event); }, 
+      onMessage: (event: any) => { onMessageReceive(changeState, event); }, 
       onError: (err: any) => { console.log("There was an error from server", err); }
     });
     
@@ -180,9 +148,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <h1>Discord - <em>{login.data.discordName}</em></h1>
       <DiscordContext.Provider value={{ ctx: state, changeCtx: changeState }}>
         <section>
+ 
           <BotState></BotState>
-          <VoiceState reloadConfig={loadBotConfig}></VoiceState>
-          <div className="card">
+          <VoiceState></VoiceState>         <div className="card">
             <div className="card-header">
               <ul className="nav nav-tabs card-header-tabs">
                 {discordOptionLink("Commands", `/discord/${discordId}/commands`)}

@@ -53,7 +53,7 @@ function VoiceState(props: any) {
         if (ddlVoiceChannelRef.current)
           ddlVoiceChannelRef.current.disabled = false;
         if (r.alert == "success") {
-          props.reloadConfig();
+          //props.reloadConfig();
         }
       }
     );
