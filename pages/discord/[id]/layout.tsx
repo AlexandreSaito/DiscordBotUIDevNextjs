@@ -5,7 +5,7 @@ import { DiscordContext } from "context/discord";
 import VoiceState from "components/discord/VoiceState";
 import BotState from "components/discord/BotState";
 import { copyChangeObject } from "js/objectHandler";
-import { FetchDiscord, setBotUrl } from "js/connection";
+import { FetchDiscord, setBotUrl, registerSSE } from "js/connection";
 import { IContext } from "js/discord/context";
 import { EnumPlayState } from "js/discord/audio";
 import { getUrls } from "js/discord/url";
@@ -73,14 +73,13 @@ function discordOptionLink(title: string, link: string) {
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const reloadBotStateDelay = 10000;
   const { id } = router.query;
   console.log("DISCORD LAYOUT", id);
   
   const discordId = !id || Array.isArray(id) ? 0 : parseInt(id);
-  
+  const url = getUrls()[discordId - 1];
   //console.log(discordId - 1, getUrls()[discordId - 1]);
-  setBotUrl(getUrls()[discordId - 1]);
+  setBotUrl(url);
   const { getLoginFrom } = React.useContext(LoginContext);
   const login = getLoginFrom(LoginEnum.Discord);
   
@@ -154,21 +153,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       loadInit();
       return;
     }
-    let lastLoadedTiming = Date.now() - state.lastLoadedTime;
-    if (
-      state.lastLoadedTime != null &&
-      lastLoadedTiming <= reloadBotStateDelay
-    ) {
-      var timeout = setTimeout(() => {
-        loadBotConfig();
-      }, reloadBotStateDelay);
-      return () => {
-        clearTimeout(timeout);
-      };
-    }
-    loadBotConfig();
-  }, [state, loadInit, loadBotConfig, discordId, login]);
-
+    
+    if (!state.guild.current || state.guild.current.id == "") return;
+    registerSSE(url + '/discord/teste-sse', { 
+      method: "POST", 
+      header: { Accept: "text/event-stream", "Referrer Policy": 'no-referrer' }, 
+      body: { discordID: login.data.discordId, discordGuild: state.guild.current.id },
+      onOpen: (res: any) => { console.log("New connection"); if(!res.ok) console.log("res", res); }, 
+      onClose: () => { console.log("Connection closed by the server"); }, 
+      onMessage: (event: any) => { console.log(event); }, 
+      onError: (err: any) => { console.log("There was an error from server", err); }
+    });
+    
+     return()=> {
+    };
+  }, [state, loadInit, discordId, login, url,]);
   if (!id) return <h3>Loading</h3>;
 
   if(!login || !login.data.permissions.includes(discordId)) {
