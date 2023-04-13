@@ -43,7 +43,7 @@ function makeListPlaylist(
     };
     el.push(
       <button type="button" key={item.id} className={elClass} onClick={onClick}>
-        {item.name}
+        {item.id.toString().padStart(2, '0')} - {item.name}
       </button>
     );
   }

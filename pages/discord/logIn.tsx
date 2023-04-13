@@ -49,10 +49,12 @@ const Home: NextPageWithLayout = (props: any) => {
         )
           return;
         console.log(r);
-        if (r.alert == "danger") {
+        if (r.alert == "danger" || !r.data) {
           btnSendRef.current.disabled = false;
           userTagRef.current.readOnly = false;
-          userTagFeedbackRef.current.innerHTML = r.message;
+          userTagFeedbackRef.current.innerHTML = r.message
+            ? r.message
+            : "Not finded Guild with this user";
           userTagRef.current.classList.add("is-invalid");
           return;
         }
@@ -63,28 +65,44 @@ const Home: NextPageWithLayout = (props: any) => {
   };
   const router = useRouter();
 
-  const onSelectBot = (id: number, discordId: string) => {
+  const onSelectBot = (id: number, url: string) => {
     if (!userTagRef.current || !userTagRef.current) return;
-    setLogin(LoginEnum.Discord, userTagRef.current.value, {
-      permissions: state.data ? state.data.map((x) => x.id) : [],
-      discordId: discordId,
-      discordName: userTagRef.current.value.split("#")[0],
-    });
-    router.push(`/discord/${id}`);
+
+    FetchResponse(
+      `${url}/discord/confirm`,
+      { body: { userTag: userTagRef.current.value.trim() } },
+      (r) => {
+        if (r.alert == "danger") {
+          // should show alert
+          return;
+        }
+        console.log(r.guildId, r.userId, r.userName);
+        setLogin(LoginEnum.Discord, userTagRef.current.value, {
+          permissions: state.data ? state.data.map((x) => x.id) : [],
+          discordGuild: r.guildId,
+          discordGuildName: r.guildName,
+          discordId: r.userId,
+          discordName: r.userName,
+        });
+        router.push(`/discord/${id}`);
+      }
+    );
   };
 
   let discordOptions = [];
   if (state.data) {
     discordOptions = state.data.map((x) => {
+      let guildId = "";
       return (
         <button
           key={x.id}
           className="list-group-item list-group-item-action"
           onClick={() => {
-            onSelectBot(x.id, x.res.id);
+            onSelectBot(x.id, x.url, guildId);
           }}
         >
-          {x.id} - {x.res.botName}
+          {x.id.toString().padStart(2, "0")} - {x.res.botName} // Guild:{" "}
+          <b>{x.res.guilds[0]}</b>
         </button>
       );
     });

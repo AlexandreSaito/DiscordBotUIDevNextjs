@@ -38,6 +38,16 @@ function PlaylistItem(props: any) {
     changeState(setState, state, { loaded: false });
   };
 
+  const onPlayPlaylist = (e: any) => {
+    FetchDiscord(
+      "/discord/playlist-add-queue",
+      { body: { playlistId: props.playlist.id } },
+      (r: any) => {
+        console.log(r);
+      }
+    );
+  };
+
   const onDeleteClick = (e: any) => {
     confirmModal(
       "Delete Playlist",
@@ -211,6 +221,9 @@ function PlaylistItem(props: any) {
         {playlistGlobalForm}
         <div className="mb-2">
           <div className="btn-group float-end">
+            <button className="btn btn-primary me-1" onClick={onPlayPlaylist}>
+              Play
+            </button>
             <button className="btn btn-danger me-1" onClick={onDeleteClick}>
               Delete Playlist
             </button>

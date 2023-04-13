@@ -32,8 +32,8 @@ body {
   height: calc(100vh - var(--header-size));
 }
 
-body > #app,
-body > #app > section.content {
+body > div,
+body > div > section.content {
   height: 100%;
 }
 
@@ -130,8 +130,14 @@ header .nav-link {
   padding: 2px 5px 2px 5px;
 }
 
-.table-sm .btn-sm {
+.table-sm td .btn-sm {
   padding: 0px 0.5rem;
+}
+
+.table .form-check.form-switch:has(:not(label)) {
+  width: 0px;
+  padding-left: 50%;
+  transform: translate(50%, 0px);
 }
 
 .text-sm {

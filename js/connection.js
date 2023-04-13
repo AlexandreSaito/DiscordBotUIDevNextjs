@@ -1,4 +1,54 @@
+import { fetchEventSource } from "@microsoft/fetch-event-source";
+
 var botUrl;
+
+const sse = [];
+
+function parseMessage(res) {
+  res.data = JSON.parse(res.data);
+  return res;
+}
+
+export async function registerSSE(
+  url,
+  { method, header, body, onOpen, onClose, onMessage, onError }
+) {
+  console.log("SSE", url, sse);
+  if (sse.find((x) => x.url == url)) {
+    return false;
+  }
+
+  if (!header) header = {};
+  sse.push({
+    url: url,
+    fetch: fetchEventSource(
+      `${url}?discordId=${body.discordID}&discordGuild=${body.discordGuild}`,
+      {
+        method: method,
+        headers: {
+          ...header,
+          "content-type": "application/json",
+          cache: "no-cache",
+        },
+        onopen: onOpen,
+        onmessage: (res) => {
+          onMessage(parseMessage(res));
+        },
+        onclose: onClose,
+        onerror: onError,
+        fetch: (url, rest) => {
+          return fetch(url, {
+            method: rest.method,
+            referrerPolicy: "no-referrer",
+            keepalive: true,
+            body: JSON.stringify(body),
+            headers: { accept: rest.headers.Accept },
+          });
+        },
+      }
+    ),
+  });
+}
 
 export function setBotUrl(url) {
   if (!botUrl) {
@@ -7,8 +57,13 @@ export function setBotUrl(url) {
   }
 }
 
+export function getBotUrl() {
+  return botUrl;
+}
+
 export function FetchDiscord(url, header, onDone) {
   if (!botUrl) return null;
+  //console.log(botUrl);
   if (!onDone) return Fetch(`${botUrl}${url}`, header);
   Fetch(`${botUrl}${url}`, header)
     .then((x) => {
